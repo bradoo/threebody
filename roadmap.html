@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三体游戏：优化与推进路线图 (Roadmap & Progress Tracker)</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #0a0c10;
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 24px;
+            overflow-y: auto;
+            height: auto;
+            min-height: 100vh;
+        }
+
+        .tracker-container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: rgba(16, 22, 34, 0.9);
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-title {
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            color: #f59e0b;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .header-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #1e293b;
+            border-radius: 20px;
+            height: 24px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #06b6d4, #10b981);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 4px #000;
+        }
+
+        .priority-section {
+            margin-bottom: 28px;
+        }
+
+        .priority-header {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .p0-header { background: rgba(239, 68, 68, 0.15); border-left: 4px solid #ef4444; color: #ef4444; }
+        .p1-header { background: rgba(245, 158, 11, 0.15); border-left: 4px solid #f59e0b; color: #f59e0b; }
+        .p2-header { background: rgba(6, 182, 212, 0.15); border-left: 4px solid #06b6d4; color: #06b6d4; }
+        .p3-header { background: rgba(168, 85, 247, 0.15); border-left: 4px solid #a855f7; color: #a855f7; }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .task-card:hover {
+            border-color: #06b6d4;
+            background: rgba(6, 182, 212, 0.04);
+        }
+
+        .task-card.completed {
+            opacity: 0.6;
+            background: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #10b981;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #e2e8f0;
+            margin-bottom: 4px;
+        }
+
+        .task-card.completed .task-title {
+            text-decoration: line-through;
+            color: #10b981;
+        }
+
+        .task-desc {
+            font-size: 0.83rem;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .task-badge {
+            font-size: 0.72rem;
+            font-family: 'Courier New', monospace;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #64748b;
+        }
+
+        .btn-nav-game {
+            display: inline-block;
+            margin-bottom: 16px;
+            padding: 8px 18px;
+            background: #f59e0b;
+            color: #000;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+        .btn-nav-game:hover { transform: scale(1.04); }
+    </style>
+</head>
+<body>
+
+    <div class="tracker-container">
+        <a href="index.html" class="btn-nav-game">🎮 返回三体游戏试玩</a>
+
+        <div class="header-title">ROADMAP & TRACKER</div>
+        <div class="header-desc">《三体游戏：百家解困》分级推进与实时完成度跟踪面板</div>
+
+        <!-- Dynamic Overall Progress Bar -->
+        <div class="progress-bar-container">
+            <div id="progress-fill" class="progress-bar-fill"></div>
+            <div id="progress-text" class="progress-text">整体完成度: 0%</div>
+        </div>
+
+        <!-- P0 Section -->
+        <div class="priority-section">
+            <div class="priority-header p0-header">
+                <span>P0 (最高优先级 — 核心听觉与 Roguelite 局外继承)</span>
+                <span>核心体验</span>
+            </div>
+            <div class="task-list">
+                <div class="task-card" data-id="p0-1">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">P0-1: 原生 Web Audio 全套音效与声效引擎</div>
+                        <div class="task-desc">实现开局古风钟磬音、乱纪元失真警报音、人肉计算机白旗传令音、脱水/浸泡声效及吸收晶体音效。</div>
+                    </div>
+                    <span class="task-badge">P0-1</span>
+                </div>
+                <div class="task-card" data-id="p0-2">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">P0-2: Roguelite 文明开局宝物/遗基卡牌三选一系统</div>
+                        <div class="task-desc">文明重生时随机提供 3 张遗基卡（如【干皮高压仓】、【墨家深井】、【智子阻尼器】），大幅提升局外重玩价值。</div>
+                    </div>
+                    <span class="task-badge">P0-2</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- P1 Section -->
+        <div class="priority-section">
+            <div class="priority-header p1-header">
+                <span>P1 (高优先级 — 气候冰火粒子与哲人羁绊)</span>
+                <span>画面与策略</span>
+            </div>
+            <div class="task-list">
+                <div class="task-card" data-id="p1-1">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">P1-1: 动态气候冰火渲染与天灾粒子动画</div>
+                        <div class="task-desc">双日凌空时渲染行星岩浆裂纹与火球粒子，三日飞空时渲染冰封霜冻纹理与雪花微粒。</div>
+                    </div>
+                    <span class="task-badge">P1-1</span>
+                </div>
+                <div class="task-card" data-id="p1-2">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">P1-2: 哲人学派组合羁绊系统 (Philosopher Synergies)</div>
+                        <div class="task-desc">同场上阵【周文王+墨子】(东方理性)、【哥白尼+牛顿】(经典科学)、【冯诺依曼+爱因斯坦】(终极算力) 触发隐藏羁绊加成。</div>
+                    </div>
+                    <span class="task-badge">P1-2</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- P2 Section -->
+        <div class="priority-section">
+            <div class="priority-header p2-header">
+                <span>P2 (中优先级 — 文明史册与成就存档)</span>
+                <span>史册与成就</span>
+            </div>
+            <div class="task-list">
+                <div class="task-card" data-id="p2-1">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">P2-1: 三体文明纪念馆与历代史册档案馆</div>
+                        <div class="task-desc">建立独立记录面板，详细展现第 N 号文明存活天数、毁灭原因、解锁成就与历史继承遗产。</div>
+                    </div>
+                    <span class="task-badge">P2-1</span>
+                </div>
+                <div class="task-card" data-id="p2-2">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">P2-2: 成就卡牌与科学图鉴收集系统</div>
+                        <div class="task-desc">设计“火海生灵”、“算数狂人”等成就勋章及全部三体天体规律科学图鉴。</div>
+                    </div>
+                    <span class="task-badge">P2-2</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- P3 Section -->
+        <div class="priority-section">
+            <div class="priority-header p3-header">
+                <span>P3 (长期路线图 — WebGL 3D 视角与创新解谜)</span>
+                <span>3D 与新模式</span>
+            </div>
+            <div class="task-list">
+                <div class="task-card" data-id="p3-1">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">P3-1: Three.js 3D 观天象与三维人肉计算机视角</div>
+                        <div class="task-desc">支持 2D 扁平终端与 3D 宇宙视角的实时无缝切换。</div>
+                    </div>
+                    <span class="task-badge">P3-1</span>
+                </div>
+                <div class="task-card" data-id="p3-2">
+                    <input type="checkbox" class="task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">P3-2: 面壁者与破壁者暗号非对称解谜模式</div>
+                        <div class="task-desc">在智子监控下，通过暗号伪装策略下达行政指令。</div>
+                    </div>
+                    <span class="task-badge">P3-2</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+
+            // Load saved state from LocalStorage
+            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{}');
+
+            checkboxes.forEach((cb) => {
+                const card = cb.closest('.task-card');
+                const taskId = card.dataset.id;
+
+                if (savedState[taskId]) {
+                    cb.checked = true;
+                    card.classList.add('completed');
+                }
+
+                cb.addEventListener('change', () => {
+                    if (cb.checked) card.classList.add('completed');
+                    else card.classList.remove('completed');
+
+                    savedState[taskId] = cb.checked;
+                    localStorage.setItem('threebody_roadmap_state', JSON.stringify(savedState));
+                    updateProgress();
+                });
+            });
+
+            function updateProgress() {
+                const total = checkboxes.length;
+                let checked = 0;
+                checkboxes.forEach(cb => { if (cb.checked) checked++; });
+                const percent = Math.round((checked / total) * 100);
+
+                progressFill.style.width = `${percent}%`;
+                progressText.innerText = `整体完成度: ${percent}% (${checked}/${total})`;
+            }
+
+            updateProgress();
+        });
+    </script>
+</body>
+</html>
