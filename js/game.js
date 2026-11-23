@@ -21,9 +21,9 @@ class GameController {
         this.resonanceRate = 0;
         this.highResonanceStreak = 0;
 
-        // Sophon System
+        // Sophon & Dilemmas
         this.sophonActive = false;
-        this.sophonCountdownVal = 3600;
+        this.activeDilemma = null;
 
         this.activePhilosopher = PHILOSOPHERS[0];
         this.isGameOver = false;
@@ -81,6 +81,13 @@ class GameController {
         this.modalBody = document.getElementById('modal-body');
         this.modalBtn = document.getElementById('modal-btn');
 
+        // Dilemma Popup Elements
+        this.dilemmaPopup = document.getElementById('dilemma-popup');
+        this.dilemmaTitle = document.getElementById('dilemma-title');
+        this.dilemmaDesc = document.getElementById('dilemma-desc');
+        this.btnDilemmaOptA = document.getElementById('btn-dilemma-opt-a');
+        this.btnDilemmaOptB = document.getElementById('btn-dilemma-opt-b');
+
         // Human Computer Modal Elements
         this.modalHC = document.getElementById('modal-human-computer');
         this.btnToggleInputA = document.getElementById('btn-toggle-input-a');
@@ -112,6 +119,32 @@ class GameController {
 
     setupEventListeners() {
         window.addEventListener('resize', () => this.resizeCanvas());
+
+        // Interactive Canvas Click for Cosmic Orbs & Particles
+        this.canvas.addEventListener('click', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const cx = this.canvas.width / 2;
+            const cy = this.canvas.height / 2;
+
+            this.physics.cosmicOrbs.forEach((orb, idx) => {
+                const ox = cx + orb.x;
+                const oy = cy + orb.y;
+                const dist = Math.sqrt((mouseX - ox) ** 2 + (mouseY - oy) ** 2);
+
+                if (dist < orb.radius + 15) {
+                    this.physics.cosmicOrbs.splice(idx, 1);
+                    if (orb.type === 'tech') {
+                        this.techLevel += 5.0;
+                        this.log('success', '✨【手动吸收】点击收集天象宇宙晶体！科技点 +5.0！');
+                    } else {
+                        this.computeBonus += 0.2;
+                        this.log('success', '⚡【手动吸收】点击采集太阳耀斑能核！全军算力 +20%！');
+                    }
+                }
+            });
+        });
 
         this.btnDehydrate.addEventListener('click', () => this.toggleDehydration(true));
         this.btnRehydrate.addEventListener('click', () => this.toggleDehydration(false));
@@ -195,6 +228,37 @@ class GameController {
             this.btnSophonCleanse.style.display = 'none';
             this.log('sophon', '【智子净化】施加微观高维电磁脉冲，临时驱散智子视网膜干涉！');
         });
+    }
+
+    showDilemmaCard(dilemma) {
+        this.activeDilemma = dilemma;
+        this.dilemmaTitle.innerText = dilemma.title;
+        this.dilemmaDesc.innerText = dilemma.desc;
+
+        this.btnDilemmaOptA.innerText = `A. ${dilemma.optionA.text}`;
+        this.btnDilemmaOptB.innerText = `B. ${dilemma.optionB.text}`;
+
+        this.btnDilemmaOptA.onclick = () => {
+            dilemma.optionA.action(this);
+            this.hideDilemmaCard();
+        };
+        this.btnDilemmaOptB.onclick = () => {
+            dilemma.optionB.action(this);
+            this.hideDilemmaCard();
+        };
+
+        this.dilemmaPopup.classList.add('active');
+    }
+
+    hideDilemmaCard() {
+        this.dilemmaPopup.classList.remove('active');
+        this.activeDilemma = null;
+    }
+
+    triggerScreenShake() {
+        const container = document.querySelector('.viewport-container');
+        container.classList.add('shake');
+        setTimeout(() => container.classList.remove('shake'), 500);
     }
 
     updateHCUI() {
@@ -311,7 +375,6 @@ class GameController {
             temp = temp * (1 - (this.resonanceRate / 200));
         }
 
-        // Einstein immunity to Sophon
         if (this.sophonActive && this.activePhilosopher.id !== 'einstein' && Math.random() < 0.3) {
             temp += (Math.random() * 20 - 10);
         }
@@ -451,6 +514,27 @@ class GameController {
         for (let y = 0; y < height; y += gridSize) {
             this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(width, y); this.ctx.stroke();
         }
+
+        // Render Cosmic Orbs (Interactive Clickables)
+        this.physics.cosmicOrbs.forEach(orb => {
+            const ox = cx + orb.x;
+            const oy = cy + orb.y;
+
+            const orbGrad = this.ctx.createRadialGradient(ox, oy, 2, ox, oy, orb.radius * 2);
+            orbGrad.addColorStop(0, '#ffffff');
+            orbGrad.addColorStop(0.5, orb.type === 'tech' ? '#06b6d4' : '#f59e0b');
+            orbGrad.addColorStop(1, 'transparent');
+
+            this.ctx.fillStyle = orbGrad;
+            this.ctx.beginPath();
+            this.ctx.arc(ox, oy, orb.radius * 2, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.beginPath();
+            this.ctx.arc(ox, oy, orb.radius * 0.6, 0, Math.PI * 2);
+            this.ctx.fill();
+        });
 
         if (this.pendulumActive) {
             const pendX = cx;

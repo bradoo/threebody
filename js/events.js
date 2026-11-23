@@ -2,16 +2,37 @@ class RandomEventManager {
     constructor(game) {
         this.game = game;
         this.eventCooldown = 0;
+        this.dilemmaCooldown = 0;
     }
 
     step(delta) {
         if (this.game.isGameOver) return;
 
         this.eventCooldown += delta * this.game.timeScale;
-        if (this.eventCooldown > 15) { // Check event trigger every 15 simulated seconds
+        this.dilemmaCooldown += delta * this.game.timeScale;
+
+        // Try spawning Cosmic Tech Orbs on canvas
+        if (Math.random() < 0.01) {
+            this.game.physics.spawnCosmicOrb(this.game.canvas.width, this.game.canvas.height);
+        }
+
+        // Trigger Random Disasters
+        if (this.eventCooldown > 12) {
             this.eventCooldown = 0;
             this.rollRandomEvent();
         }
+
+        // Trigger Choice Dilemmas (Reigns style popup card)
+        if (this.dilemmaCooldown > 20) {
+            this.dilemmaCooldown = 0;
+            this.triggerRandomDilemma();
+        }
+    }
+
+    triggerRandomDilemma() {
+        if (this.game.activeDilemma) return; // Already showing a dilemma
+        const dilemma = DILEMMAS[Math.floor(Math.random() * DILEMMAS.length)];
+        this.game.showDilemmaCard(dilemma);
     }
 
     rollRandomEvent() {
@@ -19,8 +40,8 @@ class RandomEventManager {
         const temp = this.game.physics.planet.temp;
         const visibleSuns = this.physicsPlanetVisibleSuns();
 
-        // Event 1: Double Sun Zenith (双日凌空)
-        if (visibleSuns >= 2 && temp > 120 && roll < 0.35) {
+        if (visibleSuns >= 2 && temp > 120 && roll < 0.4) {
+            this.game.triggerScreenShake();
             this.game.log('alert', '🔥【天灾事件：双日凌空】双日重叠汇聚焦点！未脱水人口与建筑物开始剧烈焚毁！');
             if (!this.game.isDehydrated) {
                 this.game.population -= 8.0;
@@ -28,8 +49,8 @@ class RandomEventManager {
             return;
         }
 
-        // Event 2: Triple Flying Stars (三日飞空)
-        if (temp < -70 && roll < 0.35) {
+        if (temp < -70 && roll < 0.4) {
+            this.game.triggerScreenShake();
             this.game.log('alert', '❄️【天灾事件：三日飞空】三日远离，地表骤降至绝对零度，水体与大气冻结成脆片！');
             if (!this.game.isDehydrated) {
                 this.game.population -= 6.0;
@@ -37,27 +58,19 @@ class RandomEventManager {
             return;
         }
 
-        // Event 3: Warehouse Mold (干皮仓真菌发霉)
-        if (this.game.isDehydrated && this.game.dehydrationProgress > 0.8 && roll < 0.25) {
+        if (this.game.isDehydrated && this.game.dehydrationProgress > 0.8 && roll < 0.3) {
             const loss = (this.game.population * 0.1).toFixed(1);
             this.game.population -= parseFloat(loss);
             this.game.log('warn', `🦠【事故事件：干皮仓真菌发霉】长达数百年的脱水导致地下仓库局部潮湿，损失 ${loss} 万干皮人口！`);
             return;
         }
 
-        // Event 4: Giant Tear (大撕扯)
-        if (visibleSuns === 3 && roll < 0.2) {
+        if (visibleSuns === 3 && roll < 0.25) {
+            this.game.triggerScreenShake();
             this.game.log('alert', '🌋【天灾事件：大撕扯】行星处于三星引力鞍点，地壳剧烈撕裂，板块坍塌！');
             if (!this.game.isDehydrated) {
                 this.game.population -= 12.0;
             }
-            return;
-        }
-
-        // Event 5: Soldier Heatstroke (人肉计算机传令兵中暑)
-        if (this.game.computeBonus > 1.0 && temp > 70 && roll < 0.3) {
-            this.game.computeBonus = 1.0;
-            this.game.log('warn', '☀️【事故事件：传令兵中暑】酷热导致三千万士兵人肉计算机出现比特翻转，算力加成暂时失效！');
             return;
         }
     }

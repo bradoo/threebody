@@ -4,6 +4,7 @@ class ThreeBodyPhysics {
         this.dt = 0.015;
         this.suns = [];
         this.planet = null;
+        this.cosmicOrbs = [];
         this.initSystem();
     }
 
@@ -25,6 +26,22 @@ class ThreeBodyPhysics {
             visibleSuns: 1,
             history: []
         };
+
+        this.cosmicOrbs = [];
+    }
+
+    spawnCosmicOrb(width, height) {
+        if (this.cosmicOrbs.length >= 4) return;
+        const rx = (Math.random() - 0.5) * (width * 0.6);
+        const ry = (Math.random() - 0.5) * (height * 0.6);
+
+        this.cosmicOrbs.push({
+            x: rx,
+            y: ry,
+            radius: 8,
+            type: Math.random() < 0.5 ? 'tech' : 'energy',
+            life: 15.0
+        });
     }
 
     step(speedMultiplier = 1) {
@@ -67,6 +84,12 @@ class ThreeBodyPhysics {
 
         this.planet.history.push({ x: this.planet.x, y: this.planet.y });
         if (this.planet.history.length > 80) this.planet.history.shift();
+
+        // Update Orbs lifetime
+        this.cosmicOrbs.forEach((orb, idx) => {
+            orb.life -= effectiveDt;
+            if (orb.life <= 0) this.cosmicOrbs.splice(idx, 1);
+        });
 
         this.calculateEnvironment();
     }
