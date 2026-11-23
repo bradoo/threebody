@@ -7,14 +7,16 @@
     <style>
         :root {
             --bg-dark: #0a0c10;
-            --panel-bg: rgba(16, 22, 34, 0.85);
+            --panel-bg: rgba(16, 22, 34, 0.88);
             --panel-border: #1e293b;
             --amber-primary: #f59e0b;
-            --amber-glow: rgba(245, 158, 11, 0.3);
+            --amber-glow: rgba(245, 158, 11, 0.35);
             --cyan-primary: #06b6d4;
-            --cyan-glow: rgba(6, 182, 212, 0.3);
+            --cyan-glow: rgba(6, 182, 212, 0.35);
             --red-alert: #ef4444;
             --green-stable: #10b981;
+            --purple-sophon: #a855f7;
+            --purple-glow: rgba(168, 85, 247, 0.35);
             --text-main: #e2e8f0;
             --text-muted: #64748b;
             --font-mono: 'Courier New', Courier, monospace;
@@ -30,7 +32,7 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", sans-serif;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
@@ -46,7 +48,37 @@
             background-size: 100% 4px;
             z-index: 100;
             pointer-events: none;
-            opacity: 0.6;
+            opacity: 0.5;
+        }
+
+        /* Retinal Countdown Glitch Overlay for Sophon */
+        .retinal-countdown {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-family: var(--font-mono);
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--purple-sophon);
+            text-shadow: 0 0 12px var(--purple-glow), 2px 2px 0px rgba(255,0,0,0.5);
+            z-index: 99;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            letter-spacing: 4px;
+        }
+
+        .retinal-countdown.active {
+            opacity: 0.85;
+            animation: glitch 1.5s infinite alternate;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); text-shadow: 0 0 12px var(--purple-glow); }
+            20% { transform: translate(-2px, 2px); text-shadow: -2px 0 red, 2px 0 cyan; }
+            40% { transform: translate(2px, -1px); }
+            60% { transform: translate(-1px, -2px); text-shadow: 2px 0 red, -2px 0 cyan; }
+            100% { transform: translate(0); }
         }
 
         /* Top Header Navigation & Status */
@@ -108,11 +140,6 @@
         .state-tag.chaotic { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--red-alert); color: var(--red-alert); }
         .state-tag.dehydrated { background: rgba(245, 158, 11, 0.2); border: 1px solid var(--amber-primary); color: var(--amber-primary); }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
         /* Main Game Layout */
         main {
             flex: 1;
@@ -125,7 +152,7 @@
             overflow: hidden;
         }
 
-        /* Left Panel: Telemetry & Environment */
+        /* Panels */
         .panel {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
@@ -133,7 +160,7 @@
             padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
             backdrop-filter: blur(6px);
             z-index: 10;
             overflow-y: auto;
@@ -166,6 +193,7 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            position: relative;
         }
 
         .telemetry-label {
@@ -180,11 +208,11 @@
             color: var(--text-main);
         }
 
-        /* Population & Hydration Meter */
+        /* Meter Groups */
         .meter-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .meter-header {
@@ -208,7 +236,7 @@
             transition: width 0.3s ease, background-color 0.3s ease;
         }
 
-        /* Center Viewport (Canvas + Controls) */
+        /* Viewport Container */
         .viewport-container {
             position: relative;
             background: #000;
@@ -243,7 +271,7 @@
         }
 
         .sun-indicator {
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.65);
             border: 1px solid rgba(245, 158, 11, 0.4);
             padding: 6px 12px;
             border-radius: 4px;
@@ -254,85 +282,85 @@
             gap: 8px;
         }
 
-        /* Command Controls at bottom of Viewport */
+        .sophon-warning-badge {
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid var(--purple-sophon);
+            color: var(--purple-sophon);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        /* Command Controls */
         .command-bar {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 16px;
+            gap: 12px;
             z-index: 20;
-            background: rgba(10, 12, 16, 0.9);
+            background: rgba(10, 12, 16, 0.92);
             border: 1px solid var(--panel-border);
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 40px;
             backdrop-filter: blur(12px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
         }
 
         .btn-cmd {
-            padding: 10px 24px;
+            padding: 8px 18px;
             border-radius: 20px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             cursor: pointer;
             border: 1px solid transparent;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             letter-spacing: 1px;
         }
 
         .btn-dehydrate {
             background: linear-gradient(135deg, #d97706, #b45309);
             color: #fff;
-            box-shadow: 0 0 15px var(--amber-glow);
+            box-shadow: 0 0 12px var(--amber-glow);
         }
-        .btn-dehydrate:hover {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            transform: translateY(-2px);
-        }
+        .btn-dehydrate:hover { transform: translateY(-2px); }
 
         .btn-rehydrate {
             background: linear-gradient(135deg, #0284c7, #0369a1);
             color: #fff;
-            box-shadow: 0 0 15px var(--cyan-glow);
+            box-shadow: 0 0 12px var(--cyan-glow);
         }
-        .btn-rehydrate:hover {
-            background: linear-gradient(135deg, #06b6d4, #0284c7);
-            transform: translateY(-2px);
-        }
+        .btn-rehydrate:hover { transform: translateY(-2px); }
 
-        .btn-speed {
+        .btn-system {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--panel-border);
             color: var(--text-main);
         }
-        .btn-speed:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+        .btn-system:hover { background: rgba(255, 255, 255, 0.12); }
 
-        /* Right Panel: Philosophers & Models */
+        /* Philosopher & Systems Right Panel */
         .philosopher-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .philosopher-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--panel-border);
             border-radius: 8px;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .philosopher-card:hover {
@@ -343,7 +371,7 @@
         .philosopher-card.active {
             border-color: var(--amber-primary);
             background: rgba(245, 158, 11, 0.08);
-            box-shadow: 0 0 12px var(--amber-glow);
+            box-shadow: 0 0 10px var(--amber-glow);
         }
 
         .philosopher-header {
@@ -354,12 +382,12 @@
 
         .philosopher-name {
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--amber-primary);
         }
 
         .philosopher-school {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
             background: rgba(255, 255, 255, 0.05);
             padding: 2px 6px;
@@ -367,52 +395,40 @@
         }
 
         .philosopher-desc {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-main);
-            line-height: 1.4;
-        }
-
-        .philosopher-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-            padding-top: 4px;
-            border-top: 1px dashed rgba(255, 255, 255, 0.08);
+            line-height: 1.35;
         }
 
         /* Log Terminal Console */
         .log-console {
             flex: 1;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.55);
             border: 1px solid var(--panel-border);
             border-radius: 6px;
-            padding: 10px;
+            padding: 8px;
             font-family: var(--font-mono);
-            font-size: 0.75rem;
+            font-size: 0.73rem;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
+            height: 120px;
         }
 
-        .log-entry {
-            line-height: 1.3;
-            word-break: break-all;
-        }
-
+        .log-entry { line-height: 1.3; word-break: break-all; }
         .log-entry.info { color: var(--text-muted); }
         .log-entry.warn { color: var(--amber-primary); }
         .log-entry.alert { color: var(--red-alert); font-weight: bold; }
         .log-entry.success { color: var(--green-stable); }
         .log-entry.system { color: var(--cyan-primary); }
+        .log-entry.sophon { color: var(--purple-sophon); font-weight: bold; }
 
-        /* Modal Overlay for Game Over & Era Transition */
+        /* Modal Overlays (Apocalypse & Mini-games) */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(5, 7, 10, 0.9);
+            background: rgba(5, 7, 10, 0.92);
             backdrop-filter: blur(16px);
             z-index: 200;
             display: flex;
@@ -420,7 +436,7 @@
             justify-content: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.4s ease;
         }
 
         .modal-overlay.active {
@@ -433,58 +449,115 @@
             border: 1px solid var(--amber-primary);
             box-shadow: 0 0 30px var(--amber-glow);
             border-radius: 12px;
-            width: 540px;
-            padding: 32px;
+            width: 600px;
+            max-width: 90vw;
+            padding: 28px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            text-align: center;
+            gap: 16px;
         }
 
         .modal-title {
             font-family: var(--font-mono);
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             color: var(--amber-primary);
             letter-spacing: 2px;
+            text-align: center;
         }
 
         .modal-subtitle {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
+            text-align: center;
         }
 
         .modal-body {
-            font-size: 0.95rem;
-            line-height: 1.6;
+            font-size: 0.9rem;
+            line-height: 1.5;
             color: var(--text-main);
-            text-align: left;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             padding: 16px;
             border-radius: 6px;
             border-left: 3px solid var(--amber-primary);
         }
 
         .modal-btn {
-            padding: 12px 32px;
+            padding: 10px 28px;
             background: var(--amber-primary);
             color: #000;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.95rem;
             border: none;
-            border-radius: 24px;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.2s ease;
             align-self: center;
         }
-        .modal-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px var(--amber-glow);
+        .modal-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--amber-glow); }
+
+        /* Logic Gate Mini-game Canvas & Grid */
+        .logic-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        .gate-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gate-card.selected {
+            border-color: var(--cyan-primary);
+            background: rgba(6, 182, 212, 0.15);
+            box-shadow: 0 0 10px var(--cyan-glow);
+        }
+
+        .flag-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .flag-white { background: #ffffff; box-shadow: 0 0 8px #fff; }
+        .flag-black { background: #334155; border: 1px solid #64748b; }
+
+        /* Pendulum Controls */
+        .control-slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--cyan-primary);
         }
     </style>
 </head>
 <body>
 
     <div class="scanline"></div>
+
+    <!-- Retinal Countdown Ghost for Sophon -->
+    <div id="sophon-countdown" class="retinal-countdown">
+        SOPHON LOCK: 1198:42:09
+    </div>
 
     <!-- Header Navigation -->
     <header>
@@ -498,18 +571,18 @@
             <span id="epoch-state-tag" class="state-tag stable">恒纪元</span>
         </div>
 
-        <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-muted);">
+        <div style="font-family: var(--font-mono); font-size: 0.88rem; color: var(--text-muted);">
             时间: <span id="time-display" style="color: var(--text-main);">0000 年</span>
         </div>
     </header>
 
     <!-- Main Game Area -->
     <main>
-        <!-- Left Panel: Telemetry & Planet Status -->
+        <!-- Left Panel: Telemetry & Environment -->
         <section class="panel">
             <div class="panel-title">
-                <span>行星状态监测</span>
-                <span style="color: var(--cyan-primary);">LIVE</span>
+                <span>行星状态遥测</span>
+                <span id="quantum-filter-tag" style="color: var(--cyan-primary);">LIVE</span>
             </div>
 
             <!-- Telemetry Cards -->
@@ -524,7 +597,7 @@
                 </div>
                 <div class="telemetry-card">
                     <span class="telemetry-label">天体运行模式</span>
-                    <span id="telemetry-mode" class="telemetry-val" style="font-size: 0.95rem;">双日凌空</span>
+                    <span id="telemetry-mode" class="telemetry-val" style="font-size: 0.9rem;">双日凌空</span>
                 </div>
                 <div class="telemetry-card">
                     <span class="telemetry-label">环境危险等级</span>
@@ -532,7 +605,7 @@
                 </div>
             </div>
 
-            <!-- Meter 1: Population -->
+            <!-- Population Meter -->
             <div class="meter-group">
                 <div class="meter-header">
                     <span>文明幸存人口</span>
@@ -543,7 +616,7 @@
                 </div>
             </div>
 
-            <!-- Meter 2: Hydration Status -->
+            <!-- Hydration Meter -->
             <div class="meter-group">
                 <div class="meter-header">
                     <span>文明状态分布</span>
@@ -554,10 +627,10 @@
                 </div>
             </div>
 
-            <!-- Science & Compute Progress -->
+            <!-- Science & Compute Meter -->
             <div class="meter-group">
                 <div class="meter-header">
-                    <span>文明科技积淀</span>
+                    <span>文明科技 / 算力</span>
                     <span id="tech-val" style="font-weight: bold; color: var(--green-stable);">15.4 / 100</span>
                 </div>
                 <div class="meter-bar-bg">
@@ -565,8 +638,34 @@
                 </div>
             </div>
 
-            <!-- Log Terminal -->
-            <div class="panel-title" style="margin-top: 8px;">
+            <!-- SYSTEM MODULE 2: GIANT PENDULUM CONTROL -->
+            <div class="panel-title" style="margin-top: 4px;">
+                <span>巨型单摆谐振控制</span>
+                <span id="pendulum-status" style="color: var(--amber-primary); font-size: 0.75rem;">未锁定</span>
+            </div>
+            <div class="telemetry-card" style="padding: 10px;">
+                <div class="control-slider-group">
+                    <div class="slider-label">
+                        <span>摆长 (Length L)</span>
+                        <span id="val-pendulum-len">250 m</span>
+                    </div>
+                    <input type="range" id="slider-pendulum-len" min="50" max="500" value="250">
+                </div>
+                <div class="control-slider-group">
+                    <div class="slider-label">
+                        <span>摆锤质量 (Mass M)</span>
+                        <span id="val-pendulum-mass">100 吨</span>
+                    </div>
+                    <input type="range" id="slider-pendulum-mass" min="10" max="300" value="100">
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">引力相位锁定率: <strong id="pendulum-resonance-val" style="color: var(--cyan-primary);">12%</strong></span>
+                    <button id="btn-toggle-pendulum" class="btn-cmd btn-system" style="padding: 4px 10px; font-size: 0.75rem;">启动单摆</button>
+                </div>
+            </div>
+
+            <!-- Terminal Log Console -->
+            <div class="panel-title" style="margin-top: 4px;">
                 <span>纪元史官日志</span>
             </div>
             <div id="log-console" class="log-console">
@@ -574,7 +673,7 @@
             </div>
         </section>
 
-        <!-- Center Viewport: Canvas & Realtime Simulation -->
+        <!-- Center Viewport: Canvas & Controls -->
         <section class="viewport-container">
             <div id="canvas-container">
                 <canvas id="sim-canvas"></canvas>
@@ -585,9 +684,12 @@
                     <span id="sun-count-badge" style="width: 10px; height: 10px; border-radius: 50%; background: var(--amber-primary); display: inline-block;"></span>
                     <span id="sky-status-text">观天象: 恒纪元，单日视直角 45°</span>
                 </div>
+                <div id="sophon-warning" class="sophon-warning-badge">
+                    ⚠️ 智子展开干扰中：量子数据存在微观纠缠噪声
+                </div>
             </div>
 
-            <!-- Floating Command Bar -->
+            <!-- Command Bar -->
             <div class="command-bar">
                 <button id="btn-dehydrate" class="btn-cmd btn-dehydrate">
                     <span>🏜️ 全民脱水</span>
@@ -595,13 +697,19 @@
                 <button id="btn-rehydrate" class="btn-cmd btn-rehydrate">
                     <span>💧 浸泡复苏</span>
                 </button>
-                <button id="btn-speed" class="btn-cmd btn-speed">
+                <button id="btn-human-computer" class="btn-cmd btn-system" style="border-color: var(--amber-primary); color: var(--amber-primary);">
+                    <span>🧮 人肉计算机</span>
+                </button>
+                <button id="btn-sophon-cleanse" class="btn-cmd btn-system" style="border-color: var(--purple-sophon); color: var(--purple-sophon); display: none;">
+                    <span>👁️ 智子净化</span>
+                </button>
+                <button id="btn-speed" class="btn-cmd btn-system">
                     <span id="speed-label">⏩ 1x 速度</span>
                 </button>
             </div>
         </section>
 
-        <!-- Right Panel: Philosophers & Simulation Prediction -->
+        <!-- Right Panel: Philosophers & Prediction -->
         <section class="panel">
             <div class="panel-title">
                 <span>智者学派与预测模型</span>
@@ -609,15 +717,15 @@
             </div>
 
             <div id="philosopher-list" class="philosopher-list">
-                <!-- Cards rendered dynamically by JS -->
+                <!-- Philosopher Cards rendered by JS -->
             </div>
 
-            <div class="panel-title" style="margin-top: 12px;">
+            <div class="panel-title" style="margin-top: 8px;">
                 <span>当前模型预测报告</span>
             </div>
             <div id="prediction-box" class="telemetry-card" style="padding: 12px; border-left: 3px solid var(--amber-primary);">
                 <div style="font-size: 0.8rem; color: var(--text-muted);">周文王·卦象推演：</div>
-                <div id="prediction-text" style="font-size: 0.9rem; margin-top: 4px; line-height: 1.4;">
+                <div id="prediction-text" style="font-size: 0.85rem; margin-top: 4px; line-height: 1.4;">
                     “离上坎下，阴阳激荡。预测未来 120 年为恒纪元，宜浸泡繁衍。”
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">
@@ -628,7 +736,7 @@
         </section>
     </main>
 
-    <!-- Modal for Apocalypse / Era End -->
+    <!-- Modal 1: Game Over Apocalypse -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-card">
             <h2 id="modal-title" class="modal-title">文明毁灭通知</h2>
@@ -640,32 +748,84 @@
         </div>
     </div>
 
-    <!-- Main Game JavaScript Code -->
+    <!-- Modal 2: Qin Shi Huang Human Computer Mini-game -->
+    <div id="modal-human-computer" class="modal-overlay">
+        <div class="modal-card" style="width: 680px;">
+            <h2 class="modal-title" style="color: var(--amber-primary);">秦始皇三千万士兵人肉计算机</h2>
+            <p class="modal-subtitle">用白旗(1)与黑旗(0)信号构建与门(AND)逻辑电路，解锁高阶数值计算算力！</p>
+
+            <div class="modal-body">
+                <div style="font-size: 0.85rem; margin-bottom: 8px;">
+                    <strong>任务要求：</strong> 配置中枢士兵的信号响应规则，使得当输入为 白旗(1) 和 白旗(1) 时，输出举 白旗(1)；其他情况输出 黑旗(0)。
+                </div>
+
+                <div style="display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 6px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">输入信号 A</div>
+                        <div id="input-a-flag" class="flag-indicator flag-white" style="margin-top: 4px;"></div>
+                        <button id="btn-toggle-input-a" style="margin-top: 6px; padding: 2px 8px; font-size: 0.75rem;">切换信号</button>
+                    </div>
+
+                    <div style="font-size: 1.5rem; color: var(--amber-primary);">+</div>
+
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">输入信号 B</div>
+                        <div id="input-b-flag" class="flag-indicator flag-white" style="margin-top: 4px;"></div>
+                        <button id="btn-toggle-input-b" style="margin-top: 6px; padding: 2px 8px; font-size: 0.75rem;">切换信号</button>
+                    </div>
+
+                    <div style="font-size: 1.5rem; color: var(--amber-primary);">=</div>
+
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">中枢逻辑门</div>
+                        <select id="select-gate-type" style="margin-top: 4px; padding: 4px; background: #1e293b; color: #fff; border: 1px solid var(--amber-primary); border-radius: 4px;">
+                            <option value="AND">与门 (AND)</option>
+                            <option value="OR">或门 (OR)</option>
+                            <option value="NAND">与非门 (NAND)</option>
+                        </select>
+                    </div>
+
+                    <div style="font-size: 1.5rem; color: var(--amber-primary);">➔</div>
+
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">中军阵列输出</div>
+                        <div id="output-flag" class="flag-indicator flag-white" style="margin-top: 4px;"></div>
+                        <span id="output-val-text" style="font-size: 0.75rem; color: var(--cyan-primary); display: block; margin-top: 4px;">输出: 1</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="hc-result-status" style="font-size: 0.85rem; color: var(--green-stable);">逻辑门电路校验正确！人肉计算机算力 +50%！</span>
+                <div style="display: flex; gap: 10px;">
+                    <button id="btn-close-hc" class="modal-btn" style="background: var(--text-muted);">关闭</button>
+                    <button id="btn-apply-hc" class="modal-btn">校验并启动阵列</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Game Script -->
     <script>
         // ==========================================
-        // 1. N-BODY PHYSICS & SIMULATION ENGINE
+        // 1. N-BODY PHYSICS & CELESTIAL ENGINE
         // ==========================================
         class ThreeBodyPhysics {
             constructor() {
-                this.G = 1200; // Gravitational constant for game canvas scale
-                this.dt = 0.015; // Time step
+                this.G = 1200;
+                this.dt = 0.015;
                 this.suns = [];
                 this.planet = null;
                 this.initSystem();
             }
 
             initSystem() {
-                // Initialize 3 Suns with balanced masses
-                const centerX = 0;
-                const centerY = 0;
-
                 this.suns = [
                     { id: 1, x: -180, y: -50, vx: 0.8, vy: -1.2, mass: 120, color: '#f59e0b', radius: 16 },
                     { id: 2, x: 180, y: 50, vx: -0.9, vy: 1.1, mass: 110, color: '#ef4444', radius: 14 },
                     { id: 3, x: 0, y: 200, vx: 1.1, vy: -0.3, mass: 100, color: '#06b6d4', radius: 13 }
                 ];
 
-                // Single planet orbiting in the chaotic potential well
                 this.planet = {
                     x: 0,
                     y: -100,
@@ -673,15 +833,14 @@
                     vy: 0.5,
                     mass: 0.1,
                     radius: 5,
-                    temp: 20,
+                    temp: 22.5,
+                    visibleSuns: 1,
                     history: []
                 };
             }
 
             step(speedMultiplier = 1) {
                 const effectiveDt = this.dt * speedMultiplier;
-
-                // Compute gravitational forces (RK4 approximation or Euler-Cromer for fast play)
                 const bodies = [...this.suns, this.planet];
                 const forces = bodies.map(() => ({ fx: 0, fy: 0 }));
 
@@ -692,7 +851,7 @@
 
                         const dx = b2.x - b1.x;
                         const dy = b2.y - b1.y;
-                        const distSq = dx * dx + dy * dy + 100; // Softening parameter to prevent infinity
+                        const distSq = dx * dx + dy * dy + 100;
                         const dist = Math.sqrt(distSq);
 
                         const f = (this.G * b1.mass * b2.mass) / distSq;
@@ -706,7 +865,6 @@
                     }
                 }
 
-                // Apply forces & update positions
                 for (let i = 0; i < bodies.length; i++) {
                     const b = bodies[i];
                     const ax = forces[i].fx / b.mass;
@@ -719,13 +877,9 @@
                     b.y += b.vy * effectiveDt;
                 }
 
-                // Keep track of planet orbit trail
                 this.planet.history.push({ x: this.planet.x, y: this.planet.y });
-                if (this.planet.history.length > 80) {
-                    this.planet.history.shift();
-                }
+                if (this.planet.history.length > 80) this.planet.history.shift();
 
-                // Calculate surface temperature & sun visibilities
                 this.calculateEnvironment();
             }
 
@@ -738,24 +892,19 @@
                     const dy = sun.y - this.planet.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
-                    // Inverse square law for radiation
                     const heatContribution = (sun.mass * 1800) / (dist * dist);
                     totalHeat += heatContribution;
 
-                    if (dist < 320) {
-                        visibleSuns++;
-                    }
+                    if (dist < 320) visibleSuns++;
                 });
 
-                // Convert radiation to Celsius-like scale
-                // Baseline cold space temp is -150°C
                 this.planet.temp = -120 + totalHeat * 3.5;
                 this.planet.visibleSuns = visibleSuns;
             }
         }
 
         // ==========================================
-        // 2. PHILOSOPHER DATA & SCHOOLS
+        // 2. PHILOSOPHER DEFINITIONS
         // ==========================================
         const PHILOSOPHERS = [
             {
@@ -778,9 +927,7 @@
                 confidence: 55,
                 techCost: 15,
                 predict: (temp, visibleSuns) => {
-                    if (visibleSuns >= 2) {
-                        return `光球反射双日重影！预警：近期即将爆发双日凌空毁热灾难！`;
-                    }
+                    if (visibleSuns >= 2) return `光球反射双日重影！预警：近期即将爆发双日凌空毁热灾难！`;
                     return `光球轨迹稳定，预测未来 30 年内气候平稳。`;
                 }
             },
@@ -792,11 +939,8 @@
                 confidence: 82,
                 techCost: 45,
                 predict: (temp, visibleSuns) => {
-                    if (temp > 80) {
-                        return `引力微分方程发散！三体系统陷入极端共振，即将面临极端乱纪元！`;
-                    } else if (temp < -40) {
-                        return `受长轨道远日点引力拖拽，预测即将进入“三日飞空”极寒冰封期！`;
-                    }
+                    if (temp > 80) return `引力微分方程发散！三体系统陷入极端共振，即将面临极端乱纪元！`;
+                    if (temp < -40) return `受长轨道远日点引力拖拽，预测即将进入“三日飞空”极寒冰封期！`;
                     return `万有引力方程收敛，预测未来 180 年为稳定恒纪元。`;
                 }
             },
@@ -806,16 +950,16 @@
                 school: '人肉计算机阵列',
                 desc: '指挥三千万士兵组成与门、或门、非门电路，以海量并行算力数值求解积分。',
                 confidence: 94,
-                techCost: 80,
+                techCost: 75,
                 predict: (temp, visibleSuns) => {
-                    const accuracy = (Math.random() * 5 + 93).toFixed(1);
+                    const accuracy = (Math.random() * 4 + 95).toFixed(1);
                     return `【人肉计算机输出】三体运动高阶数值解已算出，精度 ${accuracy}%。请及时调整脱水比例！`;
                 }
             }
         ];
 
         // ==========================================
-        // 3. GAME STATE & MAIN CONTROLLER
+        // 3. MAIN GAME CONTROLLER
         // ==========================================
         class GameController {
             constructor() {
@@ -825,10 +969,22 @@
                 this.year = 0;
                 this.timeScale = 1;
 
-                this.population = 100.0; // In 10,000s (100 = 1 Million)
+                this.population = 100.0;
                 this.isDehydrated = false;
-                this.dehydrationProgress = 0; // 0 = 100% Hydrated, 1 = 100% Dehydrated
+                this.dehydrationProgress = 0;
                 this.techLevel = 10.0;
+
+                // Human Computer & Pendulum Systems
+                this.computeBonus = 1.0;
+                this.pendulumActive = false;
+                this.pendulumLength = 250;
+                this.pendulumMass = 100;
+                this.pendulumAngle = 0;
+                this.resonanceRate = 0;
+
+                // Sophon System
+                this.sophonActive = false;
+                this.sophonCountdown = 3600;
 
                 this.activePhilosopher = PHILOSOPHERS[0];
                 this.isGameOver = false;
@@ -838,7 +994,6 @@
                 this.renderPhilosopherCards();
                 this.resizeCanvas();
 
-                // Start Game Loop
                 this.lastTime = performance.now();
                 requestAnimationFrame(this.gameLoop.bind(this));
 
@@ -874,6 +1029,8 @@
 
                 this.btnDehydrate = document.getElementById('btn-dehydrate');
                 this.btnRehydrate = document.getElementById('btn-rehydrate');
+                this.btnHumanComputer = document.getElementById('btn-human-computer');
+                this.btnSophonCleanse = document.getElementById('btn-sophon-cleanse');
                 this.btnSpeed = document.getElementById('btn-speed');
 
                 this.modalOverlay = document.getElementById('modal-overlay');
@@ -881,6 +1038,34 @@
                 this.modalSubtitle = document.getElementById('modal-subtitle');
                 this.modalBody = document.getElementById('modal-body');
                 this.modalBtn = document.getElementById('modal-btn');
+
+                // Human Computer Modal Elements
+                this.modalHC = document.getElementById('modal-human-computer');
+                this.btnToggleInputA = document.getElementById('btn-toggle-input-a');
+                this.btnToggleInputB = document.getElementById('btn-toggle-input-b');
+                this.inputAFlag = document.getElementById('input-a-flag');
+                this.inputBFlag = document.getElementById('input-b-flag');
+                this.outputFlag = document.getElementById('output-flag');
+                this.outputValText = document.getElementById('output-val-text');
+                this.selectGateType = document.getElementById('select-gate-type');
+                this.btnApplyHC = document.getElementById('btn-apply-hc');
+                this.btnCloseHC = document.getElementById('btn-close-hc');
+
+                // Pendulum Sliders
+                this.sliderPendulumLen = document.getElementById('slider-pendulum-len');
+                this.sliderPendulumMass = document.getElementById('slider-pendulum-mass');
+                this.valPendulumLen = document.getElementById('val-pendulum-len');
+                this.valPendulumMass = document.getElementById('val-pendulum-mass');
+                this.pendulumResonanceVal = document.getElementById('pendulum-resonance-val');
+                this.btnTogglePendulum = document.getElementById('btn-toggle-pendulum');
+                this.pendulumStatus = document.getElementById('pendulum-status');
+
+                // Sophon Elements
+                this.sophonCountdown = document.getElementById('sophon-countdown');
+                this.sophonWarning = document.getElementById('sophon-warning');
+
+                this.inputAState = 1;
+                this.inputBState = 1;
             }
 
             setupEventListeners() {
@@ -893,12 +1078,81 @@
                     if (this.timeScale === 1) this.timeScale = 2;
                     else if (this.timeScale === 2) this.timeScale = 5;
                     else this.timeScale = 1;
-
                     document.getElementById('speed-label').innerText = `⏩ ${this.timeScale}x 速度`;
-                    this.log('info', `游戏运行速度切换为 ${this.timeScale}x`);
                 });
 
                 this.modalBtn.addEventListener('click', () => this.restartNewEpoch());
+
+                // Human Computer Modal Logic
+                this.btnHumanComputer.addEventListener('click', () => {
+                    this.modalHC.classList.add('active');
+                });
+                this.btnCloseHC.addEventListener('click', () => {
+                    this.modalHC.classList.remove('active');
+                });
+
+                this.btnToggleInputA.addEventListener('click', () => {
+                    this.inputAState = this.inputAState === 1 ? 0 : 1;
+                    this.updateHCUI();
+                });
+                this.btnToggleInputB.addEventListener('click', () => {
+                    this.inputBState = this.inputBState === 1 ? 0 : 1;
+                    this.updateHCUI();
+                });
+                this.selectGateType.addEventListener('change', () => this.updateHCUI());
+
+                this.btnApplyHC.addEventListener('click', () => {
+                    const gate = this.selectGateType.value;
+                    if (gate === 'AND') {
+                        this.computeBonus = 1.5;
+                        this.log('success', '【人肉计算机】三千万士兵逻辑门电路校验成功！全军算力提升 50%！');
+                        this.modalHC.classList.remove('active');
+                    } else {
+                        alert('逻辑门校验错误！请选择正确的 [与门 (AND)] 以准确求解积分。');
+                    }
+                });
+
+                // Pendulum Sliders
+                this.sliderPendulumLen.addEventListener('input', (e) => {
+                    this.pendulumLength = parseInt(e.target.value);
+                    this.valPendulumLen.innerText = `${this.pendulumLength} m`;
+                });
+                this.sliderPendulumMass.addEventListener('input', (e) => {
+                    this.pendulumMass = parseInt(e.target.value);
+                    this.valPendulumMass.innerText = `${this.pendulumMass} 吨`;
+                });
+                this.btnTogglePendulum.addEventListener('click', () => {
+                    this.pendulumActive = !this.pendulumActive;
+                    this.btnTogglePendulum.innerText = this.pendulumActive ? '关闭单摆' : '启动单摆';
+                    this.pendulumStatus.innerText = this.pendulumActive ? '谐振避震中' : '未锁定';
+                    this.pendulumStatus.style.color = this.pendulumActive ? 'var(--green-stable)' : 'var(--amber-primary)';
+                    if (this.pendulumActive) {
+                        this.log('system', '【巨型单摆】启动重力谐振，开始对抗引力紊乱。');
+                    }
+                });
+
+                // Sophon Cleanse
+                this.btnSophonCleanse.addEventListener('click', () => {
+                    this.sophonActive = false;
+                    this.sophonWarning.style.display = 'none';
+                    this.sophonCountdown.classList.remove('active');
+                    this.btnSophonCleanse.style.display = 'none';
+                    this.log('sophon', '【智子净化】施加微观高维电磁脉冲，临时驱散智子视网膜干涉！');
+                });
+            }
+
+            updateHCUI() {
+                this.inputAFlag.className = `flag-indicator ${this.inputAState === 1 ? 'flag-white' : 'flag-black'}`;
+                this.inputBFlag.className = `flag-indicator ${this.inputBState === 1 ? 'flag-white' : 'flag-black'}`;
+
+                const gate = this.selectGateType.value;
+                let out = 0;
+                if (gate === 'AND') out = (this.inputAState === 1 && this.inputBState === 1) ? 1 : 0;
+                else if (gate === 'OR') out = (this.inputAState === 1 || this.inputBState === 1) ? 1 : 0;
+                else if (gate === 'NAND') out = !(this.inputAState === 1 && this.inputBState === 1) ? 1 : 0;
+
+                this.outputFlag.className = `flag-indicator ${out === 1 ? 'flag-white' : 'flag-black'}`;
+                this.outputValText.innerText = `输出: ${out}`;
             }
 
             resizeCanvas() {
@@ -925,27 +1179,20 @@
                             <span class="philosopher-school">${p.school}</span>
                         </div>
                         <div class="philosopher-desc">${p.desc}</div>
-                        <div class="philosopher-stats">
-                            <span>可靠度: ${p.confidence}%</span>
-                            <span>${isUnlocked ? '已解锁' : `需要科技: ${p.techCost}`}</span>
-                        </div>
                     `;
 
                     if (isUnlocked) {
                         card.addEventListener('click', () => {
                             this.activePhilosopher = p;
                             this.renderPhilosopherCards();
-                            this.log('system', `切入哲人学派: ${p.name} (${p.school})`);
                         });
                     }
-
                     listEl.appendChild(card);
                 });
             }
 
             toggleDehydration(shouldDehydrate) {
                 if (this.isDehydrated === shouldDehydrate) return;
-
                 this.isDehydrated = shouldDehydrate;
                 if (shouldDehydrate) {
                     this.log('warn', '【行政指令】全民脱水！三体人卷成干皮进入地下仓储。');
@@ -967,48 +1214,74 @@
             }
 
             update(delta) {
-                // Step Physics
                 this.physics.step(this.timeScale);
 
-                // Update Time
                 this.year += delta * 1.5 * this.timeScale;
                 this.timeDisplay.innerText = `${Math.floor(this.year)} 年`;
 
-                // Handle Hydration Transition
                 const targetProgress = this.isDehydrated ? 1 : 0;
                 this.dehydrationProgress += (targetProgress - this.dehydrationProgress) * delta * 2;
 
-                // Environmental Survival Calculations
-                const temp = this.physics.planet.temp;
+                // Sophon Trigger
+                if (this.techLevel > 60 && !this.sophonActive && Math.random() < 0.002) {
+                    this.sophonActive = true;
+                    this.sophonWarning.style.display = 'block';
+                    this.sophonCountdown.classList.add('active');
+                    this.btnSophonCleanse.style.display = 'flex';
+                    this.log('sophon', '⚠️【智子降临】检测到来自半人马座的三体智子对数据展开微观量子干扰！');
+                }
+
+                // Pendulum Resonance Logic
+                if (this.pendulumActive) {
+                    const targetFreq = Math.abs(this.physics.planet.temp) + 100;
+                    const currentFreq = (this.pendulumLength * 0.5) + (this.pendulumMass * 0.2);
+                    const diff = Math.abs(targetFreq - currentFreq);
+
+                    this.resonanceRate = Math.max(0, 100 - Math.floor(diff * 0.4));
+                    this.pendulumResonanceVal.innerText = `${this.resonanceRate}%`;
+
+                    this.pendulumAngle += delta * 2 * (this.resonanceRate / 50);
+                } else {
+                    this.resonanceRate = 0;
+                    this.pendulumResonanceVal.innerText = `0%`;
+                }
+
+                let temp = this.physics.planet.temp;
+
+                // Apply Pendulum Damper to extreme temps
+                if (this.pendulumActive && this.resonanceRate > 60) {
+                    temp = temp * (1 - (this.resonanceRate / 200));
+                }
+
+                // Apply Sophon noise
+                if (this.sophonActive && Math.random() < 0.3) {
+                    temp += (Math.random() * 20 - 10);
+                }
+
                 const isExtremeTemp = temp > 90 || temp < -50;
 
-                // Population damage if not dehydrated during catastrophe
                 if (isExtremeTemp) {
                     const damageRate = (1 - this.dehydrationProgress) * 0.15 * this.timeScale;
                     this.population -= damageRate;
 
-                    if (Math.random() < 0.05) {
-                        this.log('alert', `极端气候预警！当前温度 ${temp.toFixed(1)}°C！未脱水人口遭受灭顶之灾！`);
+                    if (Math.random() < 0.03) {
+                        this.log('alert', `极端气候预警！当前温度 ${temp.toFixed(1)}°C！未脱水人口受灾中！`);
                     }
                 } else if (!this.isDehydrated && this.population < 100) {
-                    // Population growth in stable era
                     this.population += 0.02 * this.timeScale;
-                    this.techLevel += 0.01 * this.timeScale;
+                    this.techLevel += 0.015 * this.computeBonus * this.timeScale;
                     if (this.techLevel > 100) this.techLevel = 100;
                     this.renderPhilosopherCards();
                 }
 
-                // Check Game Over Condition
                 if (this.population <= 0) {
                     this.triggerApocalypse();
                 }
 
-                // Update Telemetry UI
-                this.updateUI();
+                this.updateUI(temp);
             }
 
-            updateUI() {
-                const temp = this.physics.planet.temp;
+            updateUI(temp) {
                 const visibleSuns = this.physics.planet.visibleSuns;
 
                 this.tempDisplay.innerText = `${temp.toFixed(1)} °C`;
@@ -1016,7 +1289,6 @@
 
                 this.sunsDisplay.innerText = `${visibleSuns} 颗`;
 
-                // State tag logic
                 if (this.isDehydrated) {
                     this.epochStateTag.innerText = '脱水仓储';
                     this.epochStateTag.className = 'state-tag dehydrated';
@@ -1028,7 +1300,6 @@
                     this.epochStateTag.className = 'state-tag stable';
                 }
 
-                // Meter Bars
                 this.popVal.innerText = `${Math.max(0, this.population).toFixed(1)} 万`;
                 this.popBar.style.width = `${Math.max(0, this.population)}%`;
 
@@ -1039,10 +1310,10 @@
                 this.techVal.innerText = `${this.techLevel.toFixed(1)} / 100`;
                 this.techBar.style.width = `${this.techLevel}%`;
 
-                // Update Prediction Box
                 if (this.activePhilosopher) {
+                    const confidence = Math.floor(this.activePhilosopher.confidence * this.computeBonus);
                     this.predictionText.innerText = this.activePhilosopher.predict(temp, visibleSuns);
-                    this.predictionConfidence.innerText = `${this.activePhilosopher.confidence}%`;
+                    this.predictionConfidence.innerText = `${confidence}%`;
                 }
             }
 
@@ -1063,7 +1334,7 @@
 
                 this.modalTitle.innerText = `文明毁灭通知`;
                 this.modalSubtitle.innerText = `第 ${this.epochNumber} 号文明在${cause}`;
-                this.modalBody.innerText = `在 ${Math.floor(this.year)} 年的生存挣扎中，由于未能适应乱纪元的物理毁伤，文明生灵涂炭。幸运的是，人类智者留下的理论遗产保留了下来，科技初始点数提升至 ${(this.techLevel + 5).toFixed(1)}。`;
+                this.modalBody.innerText = `在 ${Math.floor(this.year)} 年的生存挣扎中，由于未能适应乱纪元的物理毁伤，文明生灵涂炭。幸运的是，智者留下的理论遗产保留了下来，科技初始点数提升至 ${(this.techLevel + 5).toFixed(1)}。`;
 
                 this.modalOverlay.classList.add('active');
             }
@@ -1089,28 +1360,62 @@
                 const cx = width / 2;
                 const cy = height / 2;
 
-                // Clear Screen with Void Space Theme
                 this.ctx.fillStyle = '#05070a';
                 this.ctx.fillRect(0, 0, width, height);
 
-                // Draw Space Grid / Starfield
+                // Grid lines
                 this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
                 this.ctx.lineWidth = 1;
                 const gridSize = 40;
                 for (let x = 0; x < width; x += gridSize) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(x, 0);
-                    this.ctx.lineTo(x, height);
-                    this.ctx.stroke();
+                    this.ctx.beginPath(); this.ctx.moveTo(x, 0); this.ctx.lineTo(x, height); this.ctx.stroke();
                 }
                 for (let y = 0; y < height; y += gridSize) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(0, y);
-                    this.ctx.lineTo(width, y);
-                    this.ctx.stroke();
+                    this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(width, y); this.ctx.stroke();
                 }
 
-                // Draw Planet Trajectory History
+                // Render Giant Pendulum if Active
+                if (this.pendulumActive) {
+                    const pendX = cx;
+                    const pendY = 60;
+                    const rodLen = 140;
+                    const bobX = pendX + Math.sin(this.pendulumAngle) * rodLen;
+                    const bobY = pendY + Math.cos(this.pendulumAngle) * rodLen;
+
+                    // Pendulum Frame
+                    this.ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+                    this.ctx.lineWidth = 3;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(pendX - 40, 20);
+                    this.ctx.lineTo(pendX, pendY);
+                    this.ctx.lineTo(pendX + 40, 20);
+                    this.ctx.stroke();
+
+                    // Rod
+                    this.ctx.strokeStyle = 'rgba(6, 182, 212, 0.8)';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(pendX, pendY);
+                    this.ctx.lineTo(bobX, bobY);
+                    this.ctx.stroke();
+
+                    // Bob
+                    this.ctx.fillStyle = '#06b6d4';
+                    this.ctx.beginPath();
+                    this.ctx.arc(bobX, bobY, 12, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    // Force field ring
+                    if (this.resonanceRate > 50) {
+                        this.ctx.strokeStyle = `rgba(16, 185, 129, ${this.resonanceRate / 100})`;
+                        this.ctx.lineWidth = 2;
+                        this.ctx.beginPath();
+                        this.ctx.arc(bobX, bobY, 24, 0, Math.PI * 2);
+                        this.ctx.stroke();
+                    }
+                }
+
+                // Render Planet Orbit Trail
                 if (this.physics.planet.history.length > 1) {
                     this.ctx.beginPath();
                     this.ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
@@ -1124,12 +1429,11 @@
                     this.ctx.stroke();
                 }
 
-                // Draw Suns
+                // Render Suns
                 this.physics.suns.forEach(sun => {
                     const sx = cx + sun.x;
                     const sy = cy + sun.y;
 
-                    // Radial Outer Glow
                     const gradient = this.ctx.createRadialGradient(sx, sy, sun.radius * 0.3, sx, sy, sun.radius * 3.5);
                     gradient.addColorStop(0, sun.color);
                     gradient.addColorStop(0.5, sun.color + '66');
@@ -1140,25 +1444,22 @@
                     this.ctx.arc(sx, sy, sun.radius * 3.5, 0, Math.PI * 2);
                     this.ctx.fill();
 
-                    // Core Sun Body
                     this.ctx.fillStyle = '#ffffff';
                     this.ctx.beginPath();
                     this.ctx.arc(sx, sy, sun.radius * 0.8, 0, Math.PI * 2);
                     this.ctx.fill();
                 });
 
-                // Draw Three-Body Planet
+                // Render Planet
                 const planet = this.physics.planet;
                 const px = cx + planet.x;
                 const py = cy + planet.y;
 
-                // Planet Glow
                 this.ctx.fillStyle = this.isDehydrated ? 'rgba(245, 158, 11, 0.5)' : 'rgba(6, 182, 212, 0.6)';
                 this.ctx.beginPath();
                 this.ctx.arc(px, py, planet.radius * 2, 0, Math.PI * 2);
                 this.ctx.fill();
 
-                // Planet Body
                 this.ctx.fillStyle = this.isDehydrated ? '#f59e0b' : '#06b6d4';
                 this.ctx.beginPath();
                 this.ctx.arc(px, py, planet.radius, 0, Math.PI * 2);
@@ -1166,7 +1467,6 @@
             }
         }
 
-        // Initialize Game Controller when DOM Ready
         window.addEventListener('DOMContentLoaded', () => {
             window.game = new GameController();
         });
