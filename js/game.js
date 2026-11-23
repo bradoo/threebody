@@ -21,7 +21,7 @@ class GameController {
         this.resonanceRate = 0;
         this.highResonanceStreak = 0;
 
-        // Sophon & Dilemmas
+        // Sophon & Dilemmas & Relics
         this.sophonActive = false;
         this.activeDilemma = null;
 
@@ -31,6 +31,7 @@ class GameController {
         this.setupDOMReferences();
         this.humanComputerVis = new HumanComputerVisualizer(this.canvas, this.ctx);
         this.eventManager = new RandomEventManager(this);
+        this.relicManager = new RelicDraftManager(this);
 
         this.setupEventListeners();
         this.renderPhilosopherCards();
@@ -40,6 +41,9 @@ class GameController {
         requestAnimationFrame(this.gameLoop.bind(this));
 
         this.log('system', `[系统启幕] 第 ${this.epochNumber} 号三体文明启程。`);
+
+        // Show Relic Draft at the start of Epoch
+        setTimeout(() => this.relicManager.showRelicDraftModal(), 600);
     }
 
     setupDOMReferences() {
@@ -120,7 +124,7 @@ class GameController {
     setupEventListeners() {
         window.addEventListener('resize', () => this.resizeCanvas());
 
-        // Interactive Canvas Click for Cosmic Orbs & Particles
+        // Interactive Canvas Click for Cosmic Orbs & Sound
         this.canvas.addEventListener('click', (e) => {
             const rect = this.canvas.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
@@ -135,6 +139,8 @@ class GameController {
 
                 if (dist < orb.radius + 15) {
                     this.physics.cosmicOrbs.splice(idx, 1);
+                    if (window.soundEngine) window.soundEngine.playOrb();
+
                     if (orb.type === 'tech') {
                         this.techLevel += 5.0;
                         this.log('success', '✨【手动吸收】点击收集天象宇宙晶体！科技点 +5.0！');
@@ -153,6 +159,7 @@ class GameController {
             this.currentViewMode = 'sky';
             this.tabSky.classList.add('active');
             this.tabHC.classList.remove('active');
+            if (window.soundEngine) window.soundEngine.playChime();
             this.log('system', '切换至 [🌌 三体天象视图]');
         });
 
@@ -160,6 +167,7 @@ class GameController {
             this.currentViewMode = 'human_computer';
             this.tabHC.classList.add('active');
             this.tabSky.classList.remove('active');
+            if (window.soundEngine) window.soundEngine.playChime();
             this.log('system', '切换至 [🪖 秦始皇三千万士兵人肉计算机列阵]');
         });
 
@@ -196,6 +204,7 @@ class GameController {
                 this.currentViewMode = 'human_computer';
                 this.tabHC.classList.add('active');
                 this.tabSky.classList.remove('active');
+                if (window.soundEngine) window.soundEngine.playChime();
                 this.log('success', '【人肉计算机】三千万士兵逻辑门电路校验成功！全军算力提升 50%！');
                 this.modalHC.classList.remove('active');
             } else {
@@ -217,6 +226,7 @@ class GameController {
             this.pendulumStatus.innerText = this.pendulumActive ? '谐振避震中' : '未锁定';
             this.pendulumStatus.style.color = this.pendulumActive ? 'var(--green-stable)' : 'var(--amber-primary)';
             if (this.pendulumActive) {
+                if (window.soundEngine) window.soundEngine.playChime();
                 this.log('system', '【巨型单摆】启动重力谐振，开始对抗引力紊乱。');
             }
         });
@@ -226,6 +236,7 @@ class GameController {
             this.sophonWarning.style.display = 'none';
             this.sophonCountdown.classList.remove('active');
             this.btnSophonCleanse.style.display = 'none';
+            if (window.soundEngine) window.soundEngine.playChime();
             this.log('sophon', '【智子净化】施加微观高维电磁脉冲，临时驱散智子视网膜干涉！');
         });
     }
@@ -256,6 +267,7 @@ class GameController {
     }
 
     triggerScreenShake() {
+        if (window.soundEngine) window.soundEngine.playAlarm();
         const container = document.querySelector('.viewport-container');
         container.classList.add('shake');
         setTimeout(() => container.classList.remove('shake'), 500);
@@ -317,6 +329,7 @@ class GameController {
         if (shouldDehydrate) {
             this.log('warn', '【行政指令】全民脱水！三体人卷成干皮进入地下仓储。');
         } else {
+            if (window.soundEngine) window.soundEngine.playSplash();
             this.log('success', '【行政指令】浸泡！将干皮投入水槽，文明重获新声。');
         }
     }
@@ -348,6 +361,7 @@ class GameController {
             this.sophonWarning.style.display = 'block';
             this.sophonCountdown.classList.add('active');
             this.btnSophonCleanse.style.display = 'flex';
+            if (window.soundEngine) window.soundEngine.playAlarm();
             this.log('sophon', '⚠️【智子降临】检测到来自半人马座的三体智子对数据展开微观量子干扰！');
         }
 
@@ -488,6 +502,8 @@ class GameController {
 
         this.epochTitle.innerText = `第 ${this.epochNumber} 号文明`;
         this.log('system', `=== 毁灭后的重生：第 ${this.epochNumber} 号三体文明启幕 ===`);
+
+        setTimeout(() => this.relicManager.showRelicDraftModal(), 400);
     }
 
     render() {
@@ -515,7 +531,6 @@ class GameController {
             this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(width, y); this.ctx.stroke();
         }
 
-        // Render Cosmic Orbs (Interactive Clickables)
         this.physics.cosmicOrbs.forEach(orb => {
             const ox = cx + orb.x;
             const oy = cy + orb.y;

@@ -23,11 +23,7 @@ body {
     overflow: hidden; height: 100vh; width: 100vw; display: flex; flex-direction: column;
 }
 
-/* Screen Shake Animation */
-.shake {
-    animation: shakeAnim 0.4s cubic-bezier(.36,.07,.19,.97) both;
-}
-
+.shake { animation: shakeAnim 0.4s cubic-bezier(.36,.07,.19,.97) both; }
 @keyframes shakeAnim {
     10%, 90% { transform: translate3d(-2px, 0, 0); }
     20%, 80% { transform: translate3d(4px, 0, 0); }
@@ -168,11 +164,6 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 }
 .dilemma-popup.active { display: flex; }
 
-@keyframes popupAnim {
-    from { transform: translate(-50%, -45%) scale(0.9); opacity: 0; }
-    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-}
-
 .dilemma-title { font-size: 1.2rem; font-weight: bold; color: var(--amber-primary); font-family: var(--font-mono); }
 .dilemma-desc { font-size: 0.85rem; line-height: 1.4; color: var(--text-main); }
 .dilemma-options { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
@@ -183,9 +174,24 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     cursor: pointer; text-align: left; transition: all 0.2s ease;
 }
 .btn-dilemma-option:hover {
-    border-color: var(--cyan-primary); background: rgba(6, 182, 212, 0.12);
-    transform: translateX(4px);
+    border-color: var(--cyan-primary); background: rgba(6, 182, 212, 0.12); transform: translateX(4px);
 }
+
+/* Relic Draft Cards UI */
+.relic-options-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 12px;
+}
+.relic-card {
+    background: rgba(255, 255, 255, 0.03); border: 1px solid var(--panel-border);
+    border-radius: 8px; padding: 16px; cursor: pointer; display: flex;
+    flex-direction: column; gap: 8px; transition: all 0.2s ease;
+}
+.relic-card:hover {
+    border-color: var(--amber-primary); background: rgba(245, 158, 11, 0.1);
+    transform: translateY(-4px); box-shadow: 0 0 15px var(--amber-glow);
+}
+.relic-title { font-weight: bold; font-size: 0.95rem; color: var(--amber-primary); text-align: center; }
+.relic-desc { font-size: 0.78rem; color: var(--text-main); line-height: 1.35; }
 
 .philosopher-list { display: flex; flex-direction: column; gap: 8px; }
 .philosopher-card {

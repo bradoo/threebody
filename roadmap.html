@@ -112,9 +112,9 @@
         }
 
         .task-card.completed {
-            opacity: 0.6;
-            background: rgba(16, 185, 129, 0.05);
-            border-color: rgba(16, 185, 129, 0.3);
+            opacity: 0.65;
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.4);
         }
 
         .task-checkbox {
@@ -192,21 +192,21 @@
                 <span>核心体验</span>
             </div>
             <div class="task-list">
-                <div class="task-card" data-id="p0-1">
-                    <input type="checkbox" class="task-checkbox">
+                <div class="task-card completed" data-id="p0-1">
+                    <input type="checkbox" class="task-checkbox" checked>
                     <div class="task-content">
-                        <div class="task-title">P0-1: 原生 Web Audio 全套音效与声效引擎</div>
-                        <div class="task-desc">实现开局古风钟磬音、乱纪元失真警报音、人肉计算机白旗传令音、脱水/浸泡声效及吸收晶体音效。</div>
+                        <div class="task-title">P0-1: 原生 Web Audio 全套音效与声效引擎 [已完成]</div>
+                        <div class="task-desc">已实现古风钟磬音、乱纪元失真警报音、人肉计算机传令音、浸泡水声及吸收晶体音效 (js/audio.js)。</div>
                     </div>
-                    <span class="task-badge">P0-1</span>
+                    <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
-                <div class="task-card" data-id="p0-2">
-                    <input type="checkbox" class="task-checkbox">
+                <div class="task-card completed" data-id="p0-2">
+                    <input type="checkbox" class="task-checkbox" checked>
                     <div class="task-content">
-                        <div class="task-title">P0-2: Roguelite 文明开局宝物/遗基卡牌三选一系统</div>
-                        <div class="task-desc">文明重生时随机提供 3 张遗基卡（如【干皮高压仓】、【墨家深井】、【智子阻尼器】），大幅提升局外重玩价值。</div>
+                        <div class="task-title">P0-2: Roguelite 文明开局宝物/遗基卡牌三选一系统 [已完成]</div>
+                        <div class="task-desc">已实现在开局与文明重生时随机提供 3 张遗基卡（【干皮高压舱】、【墨家深井】、【智子阻尼器】、【青铜引力仪】）(js/relics.js)。</div>
                     </div>
-                    <span class="task-badge">P0-2</span>
+                    <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
             </div>
         </div>
@@ -296,8 +296,7 @@
             const progressFill = document.getElementById('progress-fill');
             const progressText = document.getElementById('progress-text');
 
-            // Load saved state from LocalStorage
-            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{}');
+            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true}');
 
             checkboxes.forEach((cb) => {
                 const card = cb.closest('.task-card');
