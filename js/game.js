@@ -5,7 +5,7 @@ class GameController {
         this.epochNumber = 137;
         this.year = 0;
         this.timeScale = 1;
-        this.currentViewMode = 'sky'; // 'sky' or 'human_computer'
+        this.currentViewMode = 'sky';
 
         this.population = 100.0;
         this.isDehydrated = false;
@@ -19,6 +19,7 @@ class GameController {
         this.pendulumMass = 100;
         this.pendulumAngle = 0;
         this.resonanceRate = 0;
+        this.highResonanceStreak = 0;
 
         // Sophon System
         this.sophonActive = false;
@@ -29,6 +30,7 @@ class GameController {
 
         this.setupDOMReferences();
         this.humanComputerVis = new HumanComputerVisualizer(this.canvas, this.ctx);
+        this.eventManager = new RandomEventManager(this);
 
         this.setupEventListeners();
         this.renderPhilosopherCards();
@@ -269,6 +271,7 @@ class GameController {
 
     update(delta) {
         this.physics.step(this.timeScale);
+        this.eventManager.step(delta);
 
         this.year += delta * 1.5 * this.timeScale;
         this.timeDisplay.innerText = `${Math.floor(this.year)} 年`;
@@ -292,9 +295,13 @@ class GameController {
             this.resonanceRate = Math.max(0, 100 - Math.floor(diff * 0.4));
             this.pendulumResonanceVal.innerText = `${this.resonanceRate}%`;
 
+            if (this.resonanceRate > 85) this.highResonanceStreak += delta * this.timeScale;
+            else this.highResonanceStreak = 0;
+
             this.pendulumAngle += delta * 2 * (this.resonanceRate / 50);
         } else {
             this.resonanceRate = 0;
+            this.highResonanceStreak = 0;
             this.pendulumResonanceVal.innerText = `0%`;
         }
 
@@ -304,7 +311,8 @@ class GameController {
             temp = temp * (1 - (this.resonanceRate / 200));
         }
 
-        if (this.sophonActive && Math.random() < 0.3) {
+        // Einstein immunity to Sophon
+        if (this.sophonActive && this.activePhilosopher.id !== 'einstein' && Math.random() < 0.3) {
             temp += (Math.random() * 20 - 10);
         }
 
@@ -313,15 +321,21 @@ class GameController {
         if (isExtremeTemp) {
             const damageRate = (1 - this.dehydrationProgress) * 0.15 * this.timeScale;
             this.population -= damageRate;
-
-            if (Math.random() < 0.03) {
-                this.log('alert', `极端气候预警！当前温度 ${temp.toFixed(1)}°C！未脱水人口受灾中！`);
-            }
         } else if (!this.isDehydrated && this.population < 100) {
-            this.population += 0.02 * this.timeScale;
+            const growthBonus = this.activePhilosopher.id === 'copernicus' ? 1.2 : 1.0;
+            this.population += 0.02 * growthBonus * this.timeScale;
             this.techLevel += 0.015 * this.computeBonus * this.timeScale;
-            if (this.techLevel > 100) this.techLevel = 100;
+
+            if (this.techLevel >= 100) {
+                this.triggerVictory("启动光速曲率飞船逃离三体星系");
+                return;
+            }
             this.renderPhilosopherCards();
+        }
+
+        if (this.highResonanceStreak > 60) {
+            this.triggerVictory("通过巨型单摆锁定双星拉格朗日平动点，建立万年稳定恒纪元");
+            return;
         }
 
         if (this.population <= 0) {
@@ -375,6 +389,15 @@ class GameController {
         this.logConsole.scrollTop = this.logConsole.scrollHeight;
     }
 
+    triggerVictory(reason) {
+        this.isGameOver = true;
+        this.modalTitle.innerText = `🎉 三体文明终极胜利！`;
+        this.modalSubtitle.innerText = `第 ${this.epochNumber} 号文明成功拯救了自身`;
+        this.modalBody.innerText = `在经历了 ${Math.floor(this.year)} 年的浴血挣扎后，文明通过【${reason}】。三体星人终于摆脱了毁灭的宿命！`;
+
+        this.modalOverlay.classList.add('active');
+    }
+
     triggerApocalypse() {
         this.isGameOver = true;
         const temp = this.physics.planet.temp;
@@ -413,7 +436,6 @@ class GameController {
             return;
         }
 
-        // Celestial View Mode
         const cx = width / 2;
         const cy = height / 2;
 
@@ -430,7 +452,6 @@ class GameController {
             this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(width, y); this.ctx.stroke();
         }
 
-        // Render Pendulum
         if (this.pendulumActive) {
             const pendX = cx;
             const pendY = 60;
@@ -467,7 +488,6 @@ class GameController {
             }
         }
 
-        // Render Orbit Trail
         if (this.physics.planet.history.length > 1) {
             this.ctx.beginPath();
             this.ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
@@ -481,7 +501,6 @@ class GameController {
             this.ctx.stroke();
         }
 
-        // Render Suns
         this.physics.suns.forEach(sun => {
             const sx = cx + sun.x;
             const sy = cy + sun.y;
@@ -502,7 +521,6 @@ class GameController {
             this.ctx.fill();
         });
 
-        // Render Planet
         const planet = this.physics.planet;
         const px = cx + planet.x;
         const py = cy + planet.y;

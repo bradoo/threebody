@@ -24,6 +24,17 @@ const PHILOSOPHERS = [
         }
     },
     {
+        id: 'copernicus',
+        name: '哥白尼',
+        school: '日心说理性启蒙',
+        desc: '打破神学枷锁，推演太阳中心模型。提升全民浸泡生产效率 (+20%)。',
+        confidence: 68,
+        techCost: 30,
+        predict: (temp, visibleSuns) => {
+            return `【日心说模型】三体行星绕中心恒星公转周期已校准，乱纪元预警提前 10 年！`;
+        }
+    },
+    {
         id: 'newton',
         name: '牛顿 & 莱布尼茨',
         school: '经典力学',
@@ -42,10 +53,21 @@ const PHILOSOPHERS = [
         school: '人肉计算机阵列',
         desc: '指挥三千万士兵组成与门、或门、非门电路，以海量并行算力数值求解积分。',
         confidence: 94,
-        techCost: 75,
+        techCost: 70,
         predict: (temp, visibleSuns) => {
             const accuracy = (Math.random() * 4 + 95).toFixed(1);
             return `【人肉计算机输出】三体运动高阶数值解已算出，精度 ${accuracy}%。请及时调整脱水比例！`;
+        }
+    },
+    {
+        id: 'einstein',
+        name: '爱因斯坦',
+        school: '广义相对论引力场',
+        desc: '计算时空弯曲与引力透镜效应。免疫智子数据干扰，提供 300 年终极天体轨道解。',
+        confidence: 99,
+        techCost: 90,
+        predict: (temp, visibleSuns) => {
+            return `【引力场方程组求解】成功捕捉引力透镜，绝对锁定未来 300 年天体轨迹，不受量子干扰影响！`;
         }
     }
 ];
