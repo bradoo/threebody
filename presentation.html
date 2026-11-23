@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三体游戏：百家解困 — 策划与架构方案</title>
+    <style>
+        :root {
+            --bg-dark: #0a0c10;
+            --panel-bg: #101622;
+            --panel-border: #1e293b;
+            --amber-primary: #f59e0b;
+            --cyan-primary: #06b6d4;
+            --green-stable: #10b981;
+            --red-alert: #ef4444;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --font-mono: 'Courier New', Courier, monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 1100px;
+            height: 620px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            padding: 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .slide-container.active {
+            display: flex;
+        }
+
+        .kicker {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--cyan-primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .slide-title {
+            font-size: 1.8rem;
+            color: var(--amber-primary);
+            font-weight: bold;
+            margin-bottom: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--amber-primary);
+        }
+
+        .card-body {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        /* Nav controls */
+        .controls {
+            position: fixed;
+            bottom: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            background: rgba(16, 22, 34, 0.9);
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-nav {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 6px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-nav:hover { background: var(--amber-primary); color: #000; }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: Cover -->
+    <div class="slide-container active">
+        <div>
+            <div class="kicker">THREE-BODY GAME ARCHITECTURE</div>
+            <h1 style="font-size: 2.8rem; color: var(--amber-primary); margin-bottom: 12px;">《三体游戏：百家解困》</h1>
+            <h2 style="font-size: 1.4rem; color: var(--cyan-primary); font-weight: normal; margin-bottom: 30px;">The Three-Body Problem: Epoch of Philosophers</h2>
+            <p style="font-size: 1.1rem; line-height: 1.6; max-width: 800px; color: var(--text-main);">
+                基于《三体》原著设定构建的跨文明哲理与科学模拟游戏。玩家将扮演不同历史时期的哲人与科学家，在无休止的三日引力混沌中，通过理性预测恒纪元与乱纪元，发布【脱水/浸泡】指令，拯救三体文明。
+            </p>
+        </div>
+        <div style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.9rem;">
+            按键盘 Left / Right 箭头或下方按钮切换幻灯片
+        </div>
+    </div>
+
+    <!-- Slide 2: Lore & Objectives -->
+    <div class="slide-container">
+        <div>
+            <div class="kicker">01 / CORE CONCEPT</div>
+            <div class="slide-title">核心设定与体验目标</div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title">致敬原著 VR 游戏</div>
+                    <div class="card-body">完整复刻周文王卜卦、墨子暗室光球、牛顿微积分与冯·诺依曼人肉计算机的经典思想碰撞。</div>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--cyan-primary);">核心生存机制</div>
+                    <div class="card-body">在乱纪元来临时及时【脱水】避难，在恒纪元来临时【浸泡】复苏繁衍与科研。</div>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--green-stable);">文明纪元继承</div>
+                    <div class="card-body">经历一次次毁灭与重生，将上一纪元的物理与哲学知识传承至下一个文明（如第137号文明）。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Gameplay Loop -->
+    <div class="slide-container">
+        <div>
+            <div class="kicker">02 / GAMEPLAY LOOP</div>
+            <div class="slide-title">核心玩法循环</div>
+            <div class="grid-2" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="card">
+                    <div class="card-title">1. 观天象</div>
+                    <div class="card-body">观察太阳数量、地表温度、飞星轨迹与巨型单摆周期。</div>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--cyan-primary);">2. 集智者</div>
+                    <div class="card-body">招募与组合不同学派的哲人（文王、墨子、牛顿、冯诺依曼）。</div>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--green-stable);">3. 定策略</div>
+                    <div class="card-body">分析预测报告，发布【脱水/浸泡】指令并分配生产力。</div>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--red-alert);">4. 历纪元</div>
+                    <div class="card-body">验证预测结果，经历毁灭或繁荣，传承知识遗产。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Prototype -->
+    <div class="slide-container">
+        <div>
+            <div class="kicker">03 / PLAYABLE DEMO</div>
+            <div class="slide-title">实机 MVP 原型已就绪</div>
+            <div class="card" style="border-color: var(--amber-primary);">
+                <div class="card-title">本地在线体验 (Local Interactive Preview)</div>
+                <div class="card-body">
+                    已为你构建可直接试玩的 HTML5 / Canvas / JS 原型程序，支持三体引力模拟、遥测显示、哲人预测与脱水指令。
+                    <br><br>
+                    <strong>试玩地址：</strong> <code style="color: var(--cyan-primary); font-family: var(--font-mono);">http://localhost:8088/index.html</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="btn-nav" id="btn-prev">上一页</button>
+        <span id="slide-counter" style="font-family: var(--font-mono); font-size: 0.9rem;">1 / 4</span>
+        <button class="btn-nav" id="btn-next">下一页</button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide-container');
+        let current = 0;
+
+        function showSlide(index) {
+            slides.forEach((s, i) => s.classList.toggle('active', i === index));
+            document.getElementById('slide-counter').innerText = `${index + 1} / ${slides.length}`;
+        }
+
+        document.getElementById('btn-prev').addEventListener('click', () => {
+            if (current > 0) { current--; showSlide(current); }
+        });
+        document.getElementById('btn-next').addEventListener('click', () => {
+            if (current < slides.length - 1) { current++; showSlide(current); }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                if (current < slides.length - 1) { current++; showSlide(current); }
+            } else if (e.key === 'ArrowLeft') {
+                if (current > 0) { current--; showSlide(current); }
+            }
+        });
+    </script>
+</body>
+</html>
