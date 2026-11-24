@@ -1,3 +1,21 @@
+function openArchivesModal() {
+    if (window.game && window.game.archivesManager) {
+        window.game.archivesManager.showArchivesModal();
+    } else {
+        const archives = new CivilizationArchives();
+        archives.showArchivesModal();
+    }
+}
+
+function closeArchivesModal() {
+    if (window.game && window.game.archivesManager) {
+        window.game.archivesManager.closeArchivesModal();
+    } else {
+        const modal = document.getElementById('modal-archives');
+        if (modal) modal.classList.remove('active');
+    }
+}
+
 class CivilizationArchives {
     constructor(game) {
         this.game = game;
@@ -79,6 +97,15 @@ class CivilizationArchives {
         modal.classList.add('active');
         if (window.soundEngine) window.soundEngine.playChime();
     }
+
+    closeArchivesModal() {
+        const modal = document.getElementById('modal-archives');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
 }
 
 window.CivilizationArchives = CivilizationArchives;
+window.openArchivesModal = openArchivesModal;
+window.closeArchivesModal = closeArchivesModal;
