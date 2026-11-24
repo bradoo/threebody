@@ -48,7 +48,7 @@ body {
 header {
     height: 54px; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border);
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0 20px; z-index: 10; backdrop-filter: blur(8px);
+    padding: 0 20px; z-index: 150; backdrop-filter: blur(8px);
 }
 
 .logo-title {
@@ -228,6 +228,10 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
 }
 .modal-overlay.active { opacity: 1; pointer-events: all; }
+
+/* Archives Modal Highest Priority Z-Index */
+#modal-archives { z-index: 300; }
+
 .modal-card {
     background: var(--panel-bg); border: 1px solid var(--amber-primary);
     box-shadow: 0 0 30px var(--amber-glow); border-radius: 12px; width: 640px;

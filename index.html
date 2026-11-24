@@ -25,7 +25,7 @@
         <div class="epoch-banner">
             <span id="epoch-title" class="epoch-badge">第 137 号文明</span>
             <span id="epoch-state-tag" class="state-tag stable">恒纪元</span>
-            <button id="btn-archives" class="btn-cmd btn-system" style="padding: 3px 10px; font-size: 0.75rem;">🏛️ 文明档案馆</button>
+            <button id="btn-archives" class="btn-cmd btn-system" style="padding: 4px 12px; font-size: 0.8rem; border-color: var(--amber-primary); color: var(--amber-primary);" onclick="if(window.game && window.game.archivesManager) window.game.archivesManager.showArchivesModal();">🏛️ 文明档案馆</button>
         </div>
 
         <div style="font-family: var(--font-mono); font-size: 0.88rem; color: var(--text-muted);">
@@ -168,7 +168,7 @@
                 <button id="btn-sophon-cleanse" class="btn-cmd btn-system" style="border-color: var(--purple-sophon); color: var(--purple-sophon); display: none;">
                     <span>👁️ 智子净化</span>
                 </button>
-                <button id="btn-speed" class="btn-cmd btn-system">
+                <button id="btn-speed" class="btn-cmd btn-speed">
                     <span id="speed-label">⏩ 1x 速度</span>
                 </button>
             </div>
@@ -287,7 +287,7 @@
             <h2 class="modal-title" style="color: var(--amber-primary);">🏛️ 三体文明历代史册档案馆</h2>
             <p id="archives-stats-header" class="modal-subtitle">历史总纪元: 0 个 | 最长生存记录: 0 年</p>
             <div id="archives-list-container" class="archives-list"></div>
-            <button id="btn-close-archives" class="modal-btn" style="margin-top: 10px;">关闭史册</button>
+            <button id="btn-close-archives" class="modal-btn" style="margin-top: 10px;" onclick="document.getElementById('modal-archives').classList.remove('active');">关闭史册</button>
         </div>
     </div>
 
