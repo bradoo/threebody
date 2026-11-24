@@ -170,6 +170,9 @@
                 <button id="btn-human-computer" class="btn-cmd btn-system" style="border-color: var(--amber-primary); color: var(--amber-primary);">
                     <span>🧮 逻辑门校验</span>
                 </button>
+                <button id="btn-quiz" class="btn-cmd btn-system" style="border-color: var(--cyan-primary); color: var(--cyan-primary);" onclick="openRandomQuiz();">
+                    <span>❓ 智者考问</span>
+                </button>
                 <button id="btn-wallfacer" class="btn-cmd btn-system" style="border-color: var(--amber-primary); color: var(--amber-primary);" onclick="openWallfacerModal();">
                     <span>🕵️ 面壁密令</span>
                 </button>
@@ -332,6 +335,18 @@
         </div>
     </div>
 
+    <!-- Modal 7: Interactive Philosopher Q&A Quiz Modal -->
+    <div id="modal-quiz" class="modal-overlay" style="z-index: 350;">
+        <div class="modal-card" style="width: 580px;">
+            <h2 id="quiz-title" class="modal-title" style="color: var(--cyan-primary);">❓ 智者考问与互动论道</h2>
+            <div id="quiz-question" class="modal-body" style="border-left-color: var(--cyan-primary); font-size: 0.95rem; font-weight: bold; color: #ffffff;">
+                【日心说考问】若在夜空中同时观测到 3 颗飞星，且地表平均温度骤降至 -100°C，三体行星此时处于什么轨道？
+            </div>
+            <div id="quiz-options-container" class="dilemma-options" style="margin-top: 10px;"></div>
+            <button id="btn-close-quiz" class="modal-btn" style="background: var(--text-muted); margin-top: 10px;" onclick="closeQuizModal();">放弃回答</button>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/audio.js"></script>
     <script src="js/particles.js"></script>
@@ -346,6 +361,7 @@
     <script src="js/archives.js"></script>
     <script src="js/codex.js"></script>
     <script src="js/wallfacer.js"></script>
+    <script src="js/quiz.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>

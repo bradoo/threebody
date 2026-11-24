@@ -3,6 +3,7 @@ class RandomEventManager {
         this.game = game;
         this.eventCooldown = 0;
         this.dilemmaCooldown = 0;
+        this.quizCooldown = 0;
     }
 
     step(delta) {
@@ -10,8 +11,8 @@ class RandomEventManager {
 
         this.eventCooldown += delta * this.game.timeScale;
         this.dilemmaCooldown += delta * this.game.timeScale;
+        this.quizCooldown += delta * this.game.timeScale;
 
-        // Try spawning Cosmic Tech Orbs on canvas
         if (Math.random() < 0.01) {
             this.game.physics.spawnCosmicOrb(this.game.canvas.width, this.game.canvas.height);
         }
@@ -22,15 +23,23 @@ class RandomEventManager {
             this.rollRandomEvent();
         }
 
-        // Trigger Choice Dilemmas (Reigns style popup card)
+        // Trigger Choice Dilemmas
         if (this.dilemmaCooldown > 20) {
             this.dilemmaCooldown = 0;
             this.triggerRandomDilemma();
         }
+
+        // Trigger Interactive Philosopher Quizzes
+        if (this.quizCooldown > 25) {
+            this.quizCooldown = 0;
+            if (this.game.quizManager) {
+                this.game.quizManager.triggerRandomQuiz();
+            }
+        }
     }
 
     triggerRandomDilemma() {
-        if (this.game.activeDilemma) return; // Already showing a dilemma
+        if (this.game.activeDilemma || (this.game.quizManager && this.game.quizManager.currentQuiz)) return;
         const dilemma = DILEMMAS[Math.floor(Math.random() * DILEMMAS.length)];
         this.game.showDilemmaCard(dilemma);
     }

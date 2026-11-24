@@ -21,7 +21,7 @@ class GameController {
         this.resonanceRate = 0;
         this.highResonanceStreak = 0;
 
-        // Sophon & Dilemmas & Relics & Archives & Codex & Wallfacer
+        // Sophon & Dilemmas & Relics & Archives & Codex & Wallfacer & Quizzes
         this.sophonActive = false;
         this.activeDilemma = null;
 
@@ -39,6 +39,7 @@ class GameController {
         this.archivesManager = new CivilizationArchives(this);
         this.codexManager = new ScientificCodexManager(this);
         this.wallfacerManager = new WallfacerManager(this);
+        this.quizManager = new InteractiveQuizManager(this);
 
         this.setupEventListeners();
         this.renderPhilosopherCards();
@@ -84,6 +85,7 @@ class GameController {
         this.btnArchives = document.getElementById('btn-archives');
         this.btnCodex = document.getElementById('btn-codex');
         this.btnWallfacer = document.getElementById('btn-wallfacer');
+        this.btnQuiz = document.getElementById('btn-quiz');
 
         this.tabSky = document.getElementById('tab-sky');
         this.tab3DSky = document.getElementById('tab-3d-sky');
@@ -121,6 +123,9 @@ class GameController {
 
         this.modalWallfacer = document.getElementById('modal-wallfacer');
         this.btnCloseWallfacer = document.getElementById('btn-close-wallfacer');
+
+        this.modalQuiz = document.getElementById('modal-quiz');
+        this.btnCloseQuiz = document.getElementById('btn-close-quiz');
 
         this.sliderPendulumLen = document.getElementById('slider-pendulum-len');
         this.sliderPendulumMass = document.getElementById('slider-pendulum-mass');
@@ -188,6 +193,12 @@ class GameController {
             });
         }
 
+        if (this.btnQuiz) {
+            this.btnQuiz.addEventListener('click', () => {
+                if (window.openRandomQuiz) window.openRandomQuiz();
+            });
+        }
+
         if (this.btnCloseArchives) {
             this.btnCloseArchives.addEventListener('click', () => {
                 if (window.closeArchivesModal) window.closeArchivesModal();
@@ -203,6 +214,12 @@ class GameController {
         if (this.btnCloseWallfacer) {
             this.btnCloseWallfacer.addEventListener('click', () => {
                 if (window.closeWallfacerModal) window.closeWallfacerModal();
+            });
+        }
+
+        if (this.btnCloseQuiz) {
+            this.btnCloseQuiz.addEventListener('click', () => {
+                if (window.closeQuizModal) window.closeQuizModal();
             });
         }
 
@@ -615,14 +632,12 @@ class GameController {
         const width = this.canvas.width;
         const height = this.canvas.height;
 
-        // Explicitly hide 3D canvas when in 2D modes
         if (this.currentViewMode === '3d_sky' || this.currentViewMode === '3d_human_computer') {
             this.canvas.style.display = 'none';
             if (this.three3DVis) this.three3DVis.updateAndRender(this.physics, this.currentViewMode);
             return;
         }
 
-        // Hide 3D canvas when in 2D modes
         if (this.three3DVis) this.three3DVis.hide();
         this.canvas.style.display = 'block';
 
