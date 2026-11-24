@@ -615,12 +615,15 @@ class GameController {
         const width = this.canvas.width;
         const height = this.canvas.height;
 
+        // Explicitly hide 3D canvas when in 2D modes
         if (this.currentViewMode === '3d_sky' || this.currentViewMode === '3d_human_computer') {
             this.canvas.style.display = 'none';
             if (this.three3DVis) this.three3DVis.updateAndRender(this.physics, this.currentViewMode);
             return;
         }
 
+        // Hide 3D canvas when in 2D modes
+        if (this.three3DVis) this.three3DVis.hide();
         this.canvas.style.display = 'block';
 
         if (this.currentViewMode === 'human_computer') {

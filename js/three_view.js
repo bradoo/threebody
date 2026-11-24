@@ -8,6 +8,7 @@ class Three3DViewRenderer {
         this.planet3D = null;
         this.army3DGroup = null;
         this.isInitialized = false;
+        this.domElement = null;
     }
 
     init() {
@@ -38,6 +39,7 @@ class Three3DViewRenderer {
         this.domElement.style.position = 'absolute';
         this.domElement.style.top = '0';
         this.domElement.style.left = '0';
+        this.domElement.style.zIndex = '5';
 
         this.container.appendChild(this.domElement);
 
@@ -53,6 +55,12 @@ class Three3DViewRenderer {
 
         this.isInitialized = true;
         return true;
+    }
+
+    hide() {
+        if (this.domElement) {
+            this.domElement.style.display = 'none';
+        }
     }
 
     buildStarfield() {
@@ -79,7 +87,6 @@ class Three3DViewRenderer {
             const mat = new THREE.MeshBasicMaterial({ color: color });
             const mesh = new THREE.Mesh(geo, mat);
 
-            // Light Glow Aura
             const pLight = new THREE.PointLight(color, 2, 400);
             mesh.add(pLight);
 
@@ -124,7 +131,6 @@ class Three3DViewRenderer {
             this.domElement.style.display = 'block';
             if (this.army3DGroup) this.army3DGroup.visible = false;
 
-            // Sync 3D Sun positions with 2D physics
             physics.suns.forEach((sun, idx) => {
                 if (this.suns3D[idx]) {
                     this.suns3D[idx].position.set(sun.x * 0.8, sun.y * 0.8, 0);
@@ -132,7 +138,6 @@ class Three3DViewRenderer {
                 }
             });
 
-            // Sync 3D Planet
             if (this.planet3D && physics.planet) {
                 this.planet3D.position.set(physics.planet.x * 0.8, physics.planet.y * 0.8, 0);
                 this.planet3D.visible = true;
@@ -146,7 +151,6 @@ class Three3DViewRenderer {
                 }
             }
 
-            // Slow Camera Rotation around celestial center
             const time = performance.now() * 0.0003;
             this.camera.position.x = Math.sin(time) * 320;
             this.camera.position.y = Math.cos(time) * 320;
@@ -160,7 +164,6 @@ class Three3DViewRenderer {
                 this.army3DGroup.visible = true;
                 this.army3DGroup.rotation.z += 0.005;
 
-                // Animate soldier blocks waving
                 const time = performance.now() * 0.005;
                 this.army3DGroup.children.forEach((soldier, idx) => {
                     soldier.position.z = Math.sin(time + idx * 0.2) * 4;
@@ -170,7 +173,7 @@ class Three3DViewRenderer {
             this.camera.position.set(0, -180, 200);
             this.camera.lookAt(0, 0, 0);
         } else {
-            this.domElement.style.display = 'none';
+            this.hide();
             return;
         }
 
