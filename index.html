@@ -25,6 +25,7 @@
         <div class="epoch-banner">
             <span id="epoch-title" class="epoch-badge">第 137 号文明</span>
             <span id="epoch-state-tag" class="state-tag stable">恒纪元</span>
+            <button id="btn-archives" class="btn-cmd btn-system" style="padding: 3px 10px; font-size: 0.75rem;">🏛️ 文明档案馆</button>
         </div>
 
         <div style="font-family: var(--font-mono); font-size: 0.88rem; color: var(--text-muted);">
@@ -180,7 +181,6 @@
                 <span style="color: var(--amber-primary);">SELECT</span>
             </div>
 
-            <!-- Active Synergy Badge Indicator -->
             <div id="synergy-badge" style="display: none; background: rgba(16, 185, 129, 0.2); border: 1px solid var(--green-stable); color: var(--green-stable); font-size: 0.78rem; font-weight: bold; padding: 6px 10px; border-radius: 6px; text-align: center; font-family: var(--font-mono);">
                 ✨ 羁绊激活: 东方理性
             </div>
@@ -281,6 +281,16 @@
         </div>
     </div>
 
+    <!-- Modal 4: Civilization Archives Modal -->
+    <div id="modal-archives" class="modal-overlay">
+        <div class="modal-card" style="width: 680px;">
+            <h2 class="modal-title" style="color: var(--amber-primary);">🏛️ 三体文明历代史册档案馆</h2>
+            <p id="archives-stats-header" class="modal-subtitle">历史总纪元: 0 个 | 最长生存记录: 0 年</p>
+            <div id="archives-list-container" class="archives-list"></div>
+            <button id="btn-close-archives" class="modal-btn" style="margin-top: 10px;">关闭史册</button>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/audio.js"></script>
     <script src="js/particles.js"></script>
@@ -291,6 +301,7 @@
     <script src="js/events.js"></script>
     <script src="js/relics.js"></script>
     <script src="js/synergies.js"></script>
+    <script src="js/archives.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>

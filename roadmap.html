@@ -221,7 +221,7 @@
                     <input type="checkbox" class="task-checkbox" checked>
                     <div class="task-content">
                         <div class="task-title">P1-1: 动态气候冰火渲染与天灾粒子动画 [已完成]</div>
-                        <div class="task-desc">已实现双日凌空地表岩浆裂纹与火焰上升粒子，三日飞空冰封纹理与漫天雪花粒子 (js/particles.js)。</div>
+                        <div class="task-desc">已实现双日凌空地表岩浆裂纹与火焰上升粒子，三体飞空冰封纹理与漫天雪花粒子 (js/particles.js)。</div>
                     </div>
                     <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
@@ -243,13 +243,13 @@
                 <span>史册与成就</span>
             </div>
             <div class="task-list">
-                <div class="task-card" data-id="p2-1">
-                    <input type="checkbox" class="task-checkbox">
+                <div class="task-card completed" data-id="p2-1">
+                    <input type="checkbox" class="task-checkbox" checked>
                     <div class="task-content">
-                        <div class="task-title">P2-1: 三体文明纪念馆与历代史册档案馆</div>
-                        <div class="task-desc">建立独立记录面板，详细展现第 N 号文明存活天数、毁灭原因、解锁成就与历史继承遗产。</div>
+                        <div class="task-title">P2-1: 三体文明纪念馆与历代史册档案馆 [已完成]</div>
+                        <div class="task-desc">已实现独立史册面板，支持跨 Session 本地存储，记载历代文明生存天数、毁灭原因、峰值科技与继承遗产 (js/archives.js)。</div>
                     </div>
-                    <span class="task-badge">P2-1</span>
+                    <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
                 <div class="task-card" data-id="p2-2">
                     <input type="checkbox" class="task-checkbox">
@@ -295,7 +295,7 @@
             const progressFill = document.getElementById('progress-fill');
             const progressText = document.getElementById('progress-text');
 
-            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true,"p1-1":true,"p1-2":true}');
+            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true,"p1-1":true,"p1-2":true,"p2-1":true}');
 
             checkboxes.forEach((cb) => {
                 const card = cb.closest('.task-card');

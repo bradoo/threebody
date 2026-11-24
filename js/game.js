@@ -21,13 +21,11 @@ class GameController {
         this.resonanceRate = 0;
         this.highResonanceStreak = 0;
 
-        // Sophon & Dilemmas & Relics
+        // Sophon & Dilemmas & Relics & Archives
         this.sophonActive = false;
         this.activeDilemma = null;
 
-        // Multi-Philosopher Selection (Up to 2 active)
         this.activePhilosophers = [PHILOSOPHERS[0]];
-
         this.isGameOver = false;
 
         this.setupDOMReferences();
@@ -35,6 +33,7 @@ class GameController {
         this.eventManager = new RandomEventManager(this);
         this.relicManager = new RelicDraftManager(this);
         this.synergyManager = new SynergyManager(this);
+        this.archivesManager = new CivilizationArchives(this);
 
         this.setupEventListeners();
         this.renderPhilosopherCards();
@@ -77,6 +76,7 @@ class GameController {
         this.btnHumanComputer = document.getElementById('btn-human-computer');
         this.btnSophonCleanse = document.getElementById('btn-sophon-cleanse');
         this.btnSpeed = document.getElementById('btn-speed');
+        this.btnArchives = document.getElementById('btn-archives');
 
         this.tabSky = document.getElementById('tab-sky');
         this.tabHC = document.getElementById('tab-hc');
@@ -105,6 +105,10 @@ class GameController {
         this.selectGateType = document.getElementById('select-gate-type');
         this.btnApplyHC = document.getElementById('btn-apply-hc');
         this.btnCloseHC = document.getElementById('btn-close-hc');
+
+        // Archives Modal Elements
+        this.modalArchives = document.getElementById('modal-archives');
+        this.btnCloseArchives = document.getElementById('btn-close-archives');
 
         // Pendulum Sliders
         this.sliderPendulumLen = document.getElementById('slider-pendulum-len');
@@ -155,6 +159,18 @@ class GameController {
 
         this.btnDehydrate.addEventListener('click', () => this.toggleDehydration(true));
         this.btnRehydrate.addEventListener('click', () => this.toggleDehydration(false));
+
+        if (this.btnArchives) {
+            this.btnArchives.addEventListener('click', () => {
+                this.archivesManager.showArchivesModal();
+            });
+        }
+
+        if (this.btnCloseArchives) {
+            this.btnCloseArchives.addEventListener('click', () => {
+                this.modalArchives.classList.remove('active');
+            });
+        }
 
         this.tabSky.addEventListener('click', () => {
             this.currentViewMode = 'sky';
@@ -317,14 +333,12 @@ class GameController {
             if (isUnlocked) {
                 card.addEventListener('click', () => {
                     if (isActive) {
-                        // Deselect if active (keep at least 1)
                         if (this.activePhilosophers.length > 1) {
                             this.activePhilosophers = this.activePhilosophers.filter(ap => ap.id !== p.id);
                         }
                     } else {
-                        // Add to active (max 2)
                         if (this.activePhilosophers.length >= 2) {
-                            this.activePhilosophers.shift(); // Remove oldest
+                            this.activePhilosophers.shift();
                         }
                         this.activePhilosophers.push(p);
                     }
@@ -370,7 +384,6 @@ class GameController {
         this.dehydrationProgress += (targetProgress - this.dehydrationProgress) * delta * 2;
 
         if (this.techLevel > 60 && !this.sophonActive && Math.random() < 0.002) {
-            // Einstein immunity check
             const hasEinstein = this.activePhilosophers.some(ap => ap.id === 'einstein');
             if (!hasEinstein) {
                 this.sophonActive = true;
@@ -491,6 +504,15 @@ class GameController {
         this.modalSubtitle.innerText = `第 ${this.epochNumber} 号文明成功拯救了自身`;
         this.modalBody.innerText = `在经历了 ${Math.floor(this.year)} 年的浴血挣扎后，文明通过【${reason}】。三体星人终于摆脱了毁灭的宿命！`;
 
+        // Record into Archives
+        this.archivesManager.recordEpoch(
+            this.epochNumber,
+            this.year,
+            "终极拯救成功！",
+            this.techLevel,
+            reason
+        );
+
         this.modalOverlay.classList.add('active');
     }
 
@@ -504,6 +526,15 @@ class GameController {
         this.modalTitle.innerText = `文明毁灭通知`;
         this.modalSubtitle.innerText = `第 ${this.epochNumber} 号文明在${cause}`;
         this.modalBody.innerText = `在 ${Math.floor(this.year)} 年的生存挣扎中，由于未能适应乱纪元的物理毁伤，文明生灵涂炭。幸运的是，智者留下的理论遗产保留了下来，科技初始点数提升至 ${(this.techLevel + 5).toFixed(1)}。`;
+
+        // Record into Archives
+        this.archivesManager.recordEpoch(
+            this.epochNumber,
+            this.year,
+            cause,
+            this.techLevel,
+            this.activePhilosophers[0] ? this.activePhilosophers[0].school : '遗基遗产'
+        );
 
         this.modalOverlay.classList.add('active');
     }
@@ -550,7 +581,6 @@ class GameController {
             this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(width, y); this.ctx.stroke();
         }
 
-        // Render Cosmic Orbs (Interactive Clickables)
         this.physics.cosmicOrbs.forEach(orb => {
             const ox = cx + orb.x;
             const oy = cy + orb.y;
@@ -640,7 +670,6 @@ class GameController {
             this.ctx.fill();
         });
 
-        // Render Planet with Climate Texture
         const planet = this.physics.planet;
         const px = cx + planet.x;
         const py = cy + planet.y;
