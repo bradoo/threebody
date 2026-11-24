@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>三体游戏：百家解困 (The Three-Body Problem: Epoch of Philosophers)</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=3">
     <!-- Three.js for 3D View Mode -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -27,6 +27,7 @@
         <div class="epoch-banner">
             <span id="epoch-title" class="epoch-badge">第 137 号文明</span>
             <span id="epoch-state-tag" class="state-tag stable">恒纪元</span>
+            <button id="btn-header-quiz" class="btn-cmd btn-system" style="padding: 4px 12px; font-size: 0.8rem; border-color: var(--green-stable); color: var(--green-stable);" onclick="openRandomQuiz();">❓ 智者答题论道</button>
             <button id="btn-archives" class="btn-cmd btn-system" style="padding: 4px 12px; font-size: 0.8rem; border-color: var(--amber-primary); color: var(--amber-primary);" onclick="openArchivesModal();">🏛️ 文明档案馆</button>
             <button id="btn-codex" class="btn-cmd btn-system" style="padding: 4px 12px; font-size: 0.8rem; border-color: var(--cyan-primary); color: var(--cyan-primary);" onclick="openCodexModal();">🏆 科学图鉴与成就</button>
         </div>
@@ -170,7 +171,7 @@
                 <button id="btn-human-computer" class="btn-cmd btn-system" style="border-color: var(--amber-primary); color: var(--amber-primary);">
                     <span>🧮 逻辑门校验</span>
                 </button>
-                <button id="btn-quiz" class="btn-cmd btn-system" style="border-color: var(--cyan-primary); color: var(--cyan-primary);" onclick="openRandomQuiz();">
+                <button id="btn-quiz" class="btn-cmd btn-system" style="border-color: var(--green-stable); color: var(--green-stable);" onclick="openRandomQuiz();">
                     <span>❓ 智者考问</span>
                 </button>
                 <button id="btn-wallfacer" class="btn-cmd btn-system" style="border-color: var(--amber-primary); color: var(--amber-primary);" onclick="openWallfacerModal();">
@@ -211,6 +212,11 @@
                     <span>模型算力需求: <strong>低</strong></span>
                 </div>
             </div>
+
+            <!-- Extra Entry for Interactive Quiz -->
+            <button class="btn-cmd btn-system" style="margin-top: 8px; border-color: var(--green-stable); color: var(--green-stable); justify-content: center;" onclick="openRandomQuiz();">
+                ❓ 开启智者考问挑战 (获得算力/科技)
+            </button>
         </section>
     </main>
 
@@ -338,8 +344,8 @@
     <!-- Modal 7: Interactive Philosopher Q&A Quiz Modal -->
     <div id="modal-quiz" class="modal-overlay" style="z-index: 350;">
         <div class="modal-card" style="width: 580px;">
-            <h2 id="quiz-title" class="modal-title" style="color: var(--cyan-primary);">❓ 智者考问与互动论道</h2>
-            <div id="quiz-question" class="modal-body" style="border-left-color: var(--cyan-primary); font-size: 0.95rem; font-weight: bold; color: #ffffff;">
+            <h2 id="quiz-title" class="modal-title" style="color: var(--green-stable);">❓ 智者考问与互动论道</h2>
+            <div id="quiz-question" class="modal-body" style="border-left-color: var(--green-stable); font-size: 0.95rem; font-weight: bold; color: #ffffff;">
                 【日心说考问】若在夜空中同时观测到 3 颗飞星，且地表平均温度骤降至 -100°C，三体行星此时处于什么轨道？
             </div>
             <div id="quiz-options-container" class="dilemma-options" style="margin-top: 10px;"></div>
@@ -348,20 +354,20 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/audio.js"></script>
-    <script src="js/particles.js"></script>
-    <script src="js/physics.js"></script>
-    <script src="js/human_computer.js"></script>
-    <script src="js/three_view.js"></script>
-    <script src="js/philosophers.js"></script>
-    <script src="js/dilemmas.js"></script>
-    <script src="js/events.js"></script>
-    <script src="js/relics.js"></script>
-    <script src="js/synergies.js"></script>
-    <script src="js/archives.js"></script>
-    <script src="js/codex.js"></script>
-    <script src="js/wallfacer.js"></script>
-    <script src="js/quiz.js"></script>
-    <script src="js/game.js"></script>
+    <script src="js/audio.js?v=3"></script>
+    <script src="js/particles.js?v=3"></script>
+    <script src="js/physics.js?v=3"></script>
+    <script src="js/human_computer.js?v=3"></script>
+    <script src="js/three_view.js?v=3"></script>
+    <script src="js/philosophers.js?v=3"></script>
+    <script src="js/dilemmas.js?v=3"></script>
+    <script src="js/events.js?v=3"></script>
+    <script src="js/relics.js?v=3"></script>
+    <script src="js/synergies.js?v=3"></script>
+    <script src="js/archives.js?v=3"></script>
+    <script src="js/codex.js?v=3"></script>
+    <script src="js/wallfacer.js?v=3"></script>
+    <script src="js/quiz.js?v=3"></script>
+    <script src="js/game.js?v=3"></script>
 </body>
 </html>
