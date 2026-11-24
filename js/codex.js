@@ -64,6 +64,27 @@ const CODEX_ENTRIES = [
     }
 ];
 
+function switchCodexTab(tabName) {
+    const tabAch = document.getElementById('codex-tab-ach');
+    const tabLaws = document.getElementById('codex-tab-laws');
+    const viewAch = document.getElementById('codex-ach-view');
+    const viewLaws = document.getElementById('codex-laws-view');
+
+    if (!tabAch || !tabLaws || !viewAch || !viewLaws) return;
+
+    if (tabName === 'ach') {
+        tabAch.classList.add('active');
+        tabLaws.classList.remove('active');
+        viewAch.classList.add('active');
+        viewLaws.classList.remove('active');
+    } else {
+        tabLaws.classList.add('active');
+        tabAch.classList.remove('active');
+        viewLaws.classList.add('active');
+        viewAch.classList.remove('active');
+    }
+}
+
 class ScientificCodexManager {
     constructor(game) {
         this.game = game;
@@ -123,6 +144,7 @@ class ScientificCodexManager {
             theoryContainer.appendChild(item);
         });
 
+        switchCodexTab('ach'); // Default to Achievements tab
         modal.style.display = 'flex';
         modal.classList.add('active');
         if (window.soundEngine) window.soundEngine.playChime();
@@ -161,3 +183,4 @@ function closeCodexModal() {
 window.ScientificCodexManager = ScientificCodexManager;
 window.openCodexModal = openCodexModal;
 window.closeCodexModal = closeCodexModal;
+window.switchCodexTab = switchCodexTab;

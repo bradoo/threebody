@@ -9,17 +9,18 @@ class ThreeBodyPhysics {
     }
 
     initSystem() {
+        // Calibrated starting orbits: Planet starts in a comfortable Stable Era (恒纪元 22.5°C)
         this.suns = [
-            { id: 1, x: -180, y: -50, vx: 0.8, vy: -1.2, mass: 120, color: '#f59e0b', radius: 16 },
-            { id: 2, x: 180, y: 50, vx: -0.9, vy: 1.1, mass: 110, color: '#ef4444', radius: 14 },
-            { id: 3, x: 0, y: 200, vx: 1.1, vy: -0.3, mass: 100, color: '#06b6d4', radius: 13 }
+            { id: 1, x: -220, y: -80, vx: 0.4, vy: -0.5, mass: 110, color: '#f59e0b', radius: 16 },
+            { id: 2, x: 380, y: 250, vx: -0.2, vy: 0.3, mass: 100, color: '#ef4444', radius: 14 },
+            { id: 3, x: -350, y: 380, vx: 0.3, vy: -0.2, mass: 90, color: '#06b6d4', radius: 13 }
         ];
 
         this.planet = {
             x: 0,
             y: -100,
-            vx: 2.2,
-            vy: 0.5,
+            vx: 1.8,
+            vy: 0.2,
             mass: 0.1,
             radius: 5,
             temp: 22.5,
@@ -85,7 +86,6 @@ class ThreeBodyPhysics {
         this.planet.history.push({ x: this.planet.x, y: this.planet.y });
         if (this.planet.history.length > 80) this.planet.history.shift();
 
-        // Update Orbs lifetime
         this.cosmicOrbs.forEach((orb, idx) => {
             orb.life -= effectiveDt;
             if (orb.life <= 0) this.cosmicOrbs.splice(idx, 1);

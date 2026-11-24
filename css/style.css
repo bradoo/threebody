@@ -1,6 +1,6 @@
 :root {
     --bg-dark: #0a0c10;
-    --panel-bg: rgba(16, 22, 34, 0.88);
+    --panel-bg: rgba(16, 22, 34, 0.94);
     --panel-border: #1e293b;
     --amber-primary: #f59e0b;
     --amber-glow: rgba(245, 158, 11, 0.35);
@@ -15,7 +15,10 @@
     --font-mono: 'Courier New', Courier, monospace;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+* {
+    box-sizing: border-box; margin: 0; padding: 0; user-select: none;
+    scrollbar-width: thin; scrollbar-color: var(--cyan-primary) rgba(0, 0, 0, 0.3);
+}
 
 body {
     background-color: var(--bg-dark); color: var(--text-main);
@@ -46,9 +49,11 @@ body {
 .retinal-countdown.active { opacity: 0.85; animation: glitch 1.5s infinite alternate; }
 
 header {
-    height: 54px; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border);
+    height: 54px; background: #101622; background: var(--panel-bg);
+    border-bottom: 1px solid var(--panel-border);
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0 20px; z-index: 150; backdrop-filter: blur(8px);
+    padding: 0 20px; z-index: 150;
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
 }
 
 .logo-title {
@@ -80,9 +85,11 @@ main {
 }
 
 .panel {
-    background: var(--panel-bg); border: 1px solid var(--panel-border);
-    border-radius: 8px; padding: 14px; display: flex; flex-direction: column;
-    gap: 12px; backdrop-filter: blur(6px); z-index: 10; overflow-y: auto;
+    background: #101622; background: var(--panel-bg);
+    border: 1px solid var(--panel-border); border-radius: 8px; padding: 14px;
+    display: flex; flex-direction: column; gap: 12px;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    z-index: 10; overflow-y: auto; min-height: 0;
 }
 
 .panel-title {
@@ -110,7 +117,7 @@ main {
     cursor: crosshair;
 }
 
-#canvas-container { flex: 1; position: relative; width: 100%; height: 100%; }
+#canvas-container { flex: 1; position: relative; width: 100%; height: 100%; min-height: 0; }
 canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
 .viewport-overlay {
@@ -141,7 +148,8 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
     display: flex; gap: 10px; z-index: 20; background: rgba(10, 12, 16, 0.92);
     border: 1px solid var(--panel-border); padding: 8px 16px; border-radius: 30px;
-    backdrop-filter: blur(12px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
 }
 
 .btn-cmd {
@@ -160,7 +168,7 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     width: 440px; background: rgba(16, 22, 34, 0.96); border: 2px solid var(--amber-primary);
     box-shadow: 0 0 30px var(--amber-glow); border-radius: 12px; padding: 20px;
     z-index: 150; display: none; flex-direction: column; gap: 12px;
-    backdrop-filter: blur(16px); animation: popupAnim 0.3s ease-out;
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); animation: popupAnim 0.3s ease-out;
 }
 .dilemma-popup.active { display: flex; }
 
@@ -193,14 +201,36 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .relic-title { font-weight: bold; font-size: 0.95rem; color: var(--amber-primary); text-align: center; }
 .relic-desc { font-size: 0.78rem; color: var(--text-main); line-height: 1.35; }
 
-/* Archives & Codex List UI */
+/* Archives & Codex List UI - Firefox Cross-Browser Fixes */
 .archives-list {
-    display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; padding-right: 6px;
+    display: flex; flex-direction: column; gap: 10px;
+    overflow-y: auto; padding-right: 6px; min-height: 0; flex: 1;
+    scrollbar-width: thin; scrollbar-color: var(--cyan-primary) rgba(0, 0, 0, 0.3);
 }
 .archive-item {
     background: rgba(255, 255, 255, 0.03); border: 1px solid var(--panel-border);
-    border-radius: 6px; padding: 10px 14px; display: flex; flex-direction: column; gap: 4px;
+    border-radius: 6px; padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0;
 }
+
+/* Codex Tab Views */
+.codex-tab-nav {
+    display: flex; gap: 10px; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; margin-top: 4px;
+}
+.codex-tab-btn {
+    padding: 6px 16px; border-radius: 16px; border: 1px solid var(--panel-border);
+    background: rgba(255, 255, 255, 0.04); color: var(--text-muted); font-size: 0.85rem; font-weight: bold;
+    cursor: pointer; transition: all 0.2s ease;
+}
+.codex-tab-btn.active {
+    background: var(--cyan-primary); color: #000; border-color: var(--cyan-primary); box-shadow: 0 0 10px var(--cyan-glow);
+}
+
+.codex-tab-content {
+    display: none; flex-direction: column; gap: 10px; max-height: 52vh; overflow-y: auto;
+    min-height: 0; flex: 1; padding-right: 6px;
+    scrollbar-width: thin; scrollbar-color: var(--cyan-primary) rgba(0, 0, 0, 0.3);
+}
+.codex-tab-content.active { display: flex; }
 
 .philosopher-list { display: flex; flex-direction: column; gap: 8px; }
 .philosopher-card {
@@ -213,7 +243,7 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .log-console {
     flex: 1; background: rgba(0, 0, 0, 0.55); border: 1px solid var(--panel-border);
     border-radius: 6px; padding: 6px; font-family: var(--font-mono); font-size: 0.7rem;
-    overflow-y: auto; display: flex; flex-direction: column; gap: 3px; height: 110px;
+    overflow-y: auto; display: flex; flex-direction: column; gap: 3px; height: 110px; min-height: 0;
 }
 .log-entry.info { color: var(--text-muted); }
 .log-entry.warn { color: var(--amber-primary); }
@@ -222,10 +252,12 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .log-entry.system { color: var(--cyan-primary); }
 .log-entry.sophon { color: var(--purple-sophon); font-weight: bold; }
 
+/* Firefox Modal Overlay & Card Sizing Fixes */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(5, 7, 10, 0.92); backdrop-filter: blur(16px); z-index: 200;
-    display: none; align-items: center; justify-content: center;
+    background: #0a0c10; background: rgba(5, 7, 10, 0.92);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    z-index: 200; display: none; align-items: center; justify-content: center;
 }
 .modal-overlay.active { display: flex; opacity: 1; pointer-events: all; }
 
@@ -233,14 +265,17 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 #modal-codex { z-index: 300; }
 
 .modal-card {
-    background: var(--panel-bg); border: 1px solid var(--amber-primary);
-    box-shadow: 0 0 30px var(--amber-glow); border-radius: 12px; width: 640px;
-    max-width: 90vw; padding: 24px; display: flex; flex-direction: column; gap: 14px;
+    background: #101622; background: var(--panel-bg);
+    border: 1px solid var(--amber-primary); box-shadow: 0 0 30px var(--amber-glow);
+    border-radius: 12px; width: 660px; max-width: 92vw; max-height: 85vh;
+    overflow: hidden; min-height: 0; flex-shrink: 1;
+    padding: 24px; display: flex; flex-direction: column; gap: 12px;
 }
-.modal-title { font-family: var(--font-mono); font-size: 1.5rem; color: var(--amber-primary); text-align: center; }
-.modal-subtitle { font-size: 0.85rem; color: var(--text-muted); text-align: center; }
-.modal-body { font-size: 0.85rem; line-height: 1.5; color: var(--text-main); background: rgba(0,0,0,0.4); padding: 14px; border-radius: 6px; border-left: 3px solid var(--amber-primary); }
-.modal-btn { padding: 8px 24px; background: var(--amber-primary); color: #000; font-weight: bold; font-size: 0.9rem; border: none; border-radius: 18px; cursor: pointer; align-self: center; }
+
+.modal-title { font-family: var(--font-mono); font-size: 1.5rem; color: var(--amber-primary); text-align: center; flex-shrink: 0; }
+.modal-subtitle { font-size: 0.85rem; color: var(--text-muted); text-align: center; flex-shrink: 0; }
+.modal-body { font-size: 0.85rem; line-height: 1.5; color: var(--text-main); background: rgba(0,0,0,0.4); padding: 14px; border-radius: 6px; border-left: 3px solid var(--amber-primary); flex-shrink: 0; }
+.modal-btn { padding: 8px 24px; background: var(--amber-primary); color: #000; font-weight: bold; font-size: 0.9rem; border: none; border-radius: 18px; cursor: pointer; align-self: center; flex-shrink: 0; margin-top: auto; }
 
 .flag-indicator { width: 18px; height: 18px; border-radius: 50%; display: inline-block; }
 .flag-white { background: #ffffff; box-shadow: 0 0 8px #fff; }

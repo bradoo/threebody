@@ -292,23 +292,29 @@
         </div>
     </div>
 
-    <!-- Modal 5: Scientific Codex & Achievements Modal -->
+    <!-- Modal 5: Scientific Codex & Achievements Tabbed Modal -->
     <div id="modal-codex" class="modal-overlay">
-        <div class="modal-card" style="width: 720px; max-height: 85vh;">
+        <div class="modal-card">
             <h2 class="modal-title" style="color: var(--cyan-primary);">🏆 三体科学图鉴与勋章成就</h2>
             <p class="modal-subtitle">记录人类智者探索三体天体规律的科学定律与文明勋章</p>
 
-            <div class="panel-title">
-                <span>成就勋章集</span>
+            <!-- Codex Tab Navigation -->
+            <div class="codex-tab-nav">
+                <button id="codex-tab-ach" class="codex-tab-btn active" onclick="switchCodexTab('ach');">🏆 勋章成就</button>
+                <button id="codex-tab-laws" class="codex-tab-btn" onclick="switchCodexTab('laws');">📖 科学定律图鉴</button>
             </div>
-            <div id="codex-achievements-container" class="archives-list" style="max-height: 140px;"></div>
 
-            <div class="panel-title" style="margin-top: 8px;">
-                <span>三体物理与科学定律图鉴</span>
+            <!-- Tab 1: Achievements View -->
+            <div id="codex-ach-view" class="codex-tab-content active">
+                <div id="codex-achievements-container"></div>
             </div>
-            <div id="codex-theory-container" class="archives-list" style="max-height: 180px;"></div>
 
-            <button id="btn-close-codex" class="modal-btn" style="margin-top: 10px;" onclick="closeCodexModal();">关闭图鉴</button>
+            <!-- Tab 2: Physics Laws Codex View -->
+            <div id="codex-laws-view" class="codex-tab-content">
+                <div id="codex-theory-container"></div>
+            </div>
+
+            <button id="btn-close-codex" class="modal-btn" onclick="closeCodexModal();">关闭图鉴</button>
         </div>
     </div>
 
