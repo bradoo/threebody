@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>三体游戏：百家解困 (The Three-Body Problem: Epoch of Philosophers)</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- Three.js for 3D View Mode -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
@@ -132,8 +134,10 @@
             </div>
 
             <div class="view-tabs">
-                <button id="tab-sky" class="tab-btn active">🌌 三体天象视图</button>
-                <button id="tab-hc" class="tab-btn">🪖 人肉计算机列阵</button>
+                <button id="tab-sky" class="tab-btn active">🌌 2D天象</button>
+                <button id="tab-3d-sky" class="tab-btn">🪐 3D天象</button>
+                <button id="tab-hc" class="tab-btn">🪖 2D人肉计算机</button>
+                <button id="tab-3d-hc" class="tab-btn">🏰 3D士兵列阵</button>
             </div>
 
             <div class="viewport-overlay">
@@ -165,6 +169,9 @@
                 </button>
                 <button id="btn-human-computer" class="btn-cmd btn-system" style="border-color: var(--amber-primary); color: var(--amber-primary);">
                     <span>🧮 逻辑门校验</span>
+                </button>
+                <button id="btn-wallfacer" class="btn-cmd btn-system" style="border-color: var(--amber-primary); color: var(--amber-primary);" onclick="openWallfacerModal();">
+                    <span>🕵️ 面壁密令</span>
                 </button>
                 <button id="btn-sophon-cleanse" class="btn-cmd btn-system" style="border-color: var(--purple-sophon); color: var(--purple-sophon); display: none;">
                     <span>👁️ 智子净化</span>
@@ -298,18 +305,15 @@
             <h2 class="modal-title" style="color: var(--cyan-primary);">🏆 三体科学图鉴与勋章成就</h2>
             <p class="modal-subtitle">记录人类智者探索三体天体规律的科学定律与文明勋章</p>
 
-            <!-- Codex Tab Navigation -->
             <div class="codex-tab-nav">
                 <button id="codex-tab-ach" class="codex-tab-btn active" onclick="switchCodexTab('ach');">🏆 勋章成就</button>
                 <button id="codex-tab-laws" class="codex-tab-btn" onclick="switchCodexTab('laws');">📖 科学定律图鉴</button>
             </div>
 
-            <!-- Tab 1: Achievements View -->
             <div id="codex-ach-view" class="codex-tab-content active">
                 <div id="codex-achievements-container"></div>
             </div>
 
-            <!-- Tab 2: Physics Laws Codex View -->
             <div id="codex-laws-view" class="codex-tab-content">
                 <div id="codex-theory-container"></div>
             </div>
@@ -318,11 +322,22 @@
         </div>
     </div>
 
+    <!-- Modal 6: Wallfacer Directives Modal -->
+    <div id="modal-wallfacer" class="modal-overlay">
+        <div class="modal-card" style="width: 680px;">
+            <h2 class="modal-title" style="color: var(--amber-primary);">🕵️ 面壁法案·战略伪装密令</h2>
+            <p class="modal-subtitle">面壁者的战略意图只保留在思维内部。通过伪装指令反制智子监控：</p>
+            <div id="wallfacer-directives-container" class="archives-list"></div>
+            <button id="btn-close-wallfacer" class="modal-btn" style="margin-top: 10px;" onclick="closeWallfacerModal();">签署并退出</button>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/audio.js"></script>
     <script src="js/particles.js"></script>
     <script src="js/physics.js"></script>
     <script src="js/human_computer.js"></script>
+    <script src="js/three_view.js"></script>
     <script src="js/philosophers.js"></script>
     <script src="js/dilemmas.js"></script>
     <script src="js/events.js"></script>
@@ -330,6 +345,7 @@
     <script src="js/synergies.js"></script>
     <script src="js/archives.js"></script>
     <script src="js/codex.js"></script>
+    <script src="js/wallfacer.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>

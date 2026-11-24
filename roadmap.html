@@ -53,7 +53,7 @@
         .progress-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, #06b6d4, #10b981);
-            width: 0%;
+            width: 100%;
             transition: width 0.4s ease;
         }
 
@@ -180,8 +180,8 @@
         <div class="header-desc">《三体游戏：百家解困》分级推进与实时完成度跟踪面板</div>
 
         <div class="progress-bar-container">
-            <div id="progress-fill" class="progress-bar-fill"></div>
-            <div id="progress-text" class="progress-text">整体完成度: 0%</div>
+            <div id="progress-fill" class="progress-bar-fill" style="width: 100%;"></div>
+            <div id="progress-text" class="progress-text">整体完成度: 100% (8/8)</div>
         </div>
 
         <!-- P0 Section -->
@@ -269,21 +269,21 @@
                 <span>3D 与新模式</span>
             </div>
             <div class="task-list">
-                <div class="task-card" data-id="p3-1">
-                    <input type="checkbox" class="task-checkbox">
+                <div class="task-card completed" data-id="p3-1">
+                    <input type="checkbox" class="task-checkbox" checked>
                     <div class="task-content">
-                        <div class="task-title">P3-1: Three.js 3D 观天象与三维人肉计算机视角</div>
-                        <div class="task-desc">支持 2D 扁平终端与 3D 宇宙视角的实时无缝切换。</div>
+                        <div class="task-title">P3-1: Three.js 3D 观天象与三维人肉计算机视角 [已完成]</div>
+                        <div class="task-desc">已实现 Three.js 3D 宇宙视轨渲染与 3D 人肉计算机士兵方阵，支持 2D/3D 模式平滑切换 (js/three_view.js)。</div>
                     </div>
-                    <span class="task-badge">P3-1</span>
+                    <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
-                <div class="task-card" data-id="p3-2">
-                    <input type="checkbox" class="task-checkbox">
+                <div class="task-card completed" data-id="p3-2">
+                    <input type="checkbox" class="task-checkbox" checked>
                     <div class="task-content">
-                        <div class="task-title">P3-2: 面壁者与破壁者暗号非对称解谜模式</div>
-                        <div class="task-desc">在智子监控下，通过暗号伪装策略下达行政指令。</div>
+                        <div class="task-title">P3-2: 面壁者与破壁者暗号伪装非对称解谜模式 [已完成]</div>
+                        <div class="task-desc">已实现面壁者战略伪装密令面板，包含【恒纪元伪装假象】、【思维风暴防热盾】及【水滴强相互作用力突破】密令 (js/wallfacer.js)。</div>
                     </div>
-                    <span class="task-badge">P3-2</span>
+                    <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
             </div>
         </div>
@@ -295,7 +295,7 @@
             const progressFill = document.getElementById('progress-fill');
             const progressText = document.getElementById('progress-text');
 
-            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true,"p1-1":true,"p1-2":true,"p2-1":true,"p2-2":true}');
+            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true,"p1-1":true,"p1-2":true,"p2-1":true,"p2-2":true,"p3-1":true,"p3-2":true}');
 
             checkboxes.forEach((cb) => {
                 const card = cb.closest('.task-card');

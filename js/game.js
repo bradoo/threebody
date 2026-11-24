@@ -21,7 +21,7 @@ class GameController {
         this.resonanceRate = 0;
         this.highResonanceStreak = 0;
 
-        // Sophon & Dilemmas & Relics & Archives & Codex
+        // Sophon & Dilemmas & Relics & Archives & Codex & Wallfacer
         this.sophonActive = false;
         this.activeDilemma = null;
 
@@ -30,11 +30,15 @@ class GameController {
 
         this.setupDOMReferences();
         this.humanComputerVis = new HumanComputerVisualizer(this.canvas, this.ctx);
+        this.three3DVis = new Three3DViewRenderer(document.getElementById('canvas-container'));
+        this.three3DVis.init();
+
         this.eventManager = new RandomEventManager(this);
         this.relicManager = new RelicDraftManager(this);
         this.synergyManager = new SynergyManager(this);
         this.archivesManager = new CivilizationArchives(this);
         this.codexManager = new ScientificCodexManager(this);
+        this.wallfacerManager = new WallfacerManager(this);
 
         this.setupEventListeners();
         this.renderPhilosopherCards();
@@ -79,9 +83,12 @@ class GameController {
         this.btnSpeed = document.getElementById('btn-speed');
         this.btnArchives = document.getElementById('btn-archives');
         this.btnCodex = document.getElementById('btn-codex');
+        this.btnWallfacer = document.getElementById('btn-wallfacer');
 
         this.tabSky = document.getElementById('tab-sky');
+        this.tab3DSky = document.getElementById('tab-3d-sky');
         this.tabHC = document.getElementById('tab-hc');
+        this.tab3DHC = document.getElementById('tab-3d-hc');
 
         this.modalOverlay = document.getElementById('modal-overlay');
         this.modalTitle = document.getElementById('modal-title');
@@ -89,14 +96,12 @@ class GameController {
         this.modalBody = document.getElementById('modal-body');
         this.modalBtn = document.getElementById('modal-btn');
 
-        // Dilemma Popup Elements
         this.dilemmaPopup = document.getElementById('dilemma-popup');
         this.dilemmaTitle = document.getElementById('dilemma-title');
         this.dilemmaDesc = document.getElementById('dilemma-desc');
         this.btnDilemmaOptA = document.getElementById('btn-dilemma-opt-a');
         this.btnDilemmaOptB = document.getElementById('btn-dilemma-opt-b');
 
-        // Human Computer Modal Elements
         this.modalHC = document.getElementById('modal-human-computer');
         this.btnToggleInputA = document.getElementById('btn-toggle-input-a');
         this.btnToggleInputB = document.getElementById('btn-toggle-input-b');
@@ -108,15 +113,15 @@ class GameController {
         this.btnApplyHC = document.getElementById('btn-apply-hc');
         this.btnCloseHC = document.getElementById('btn-close-hc');
 
-        // Archives Modal Elements
         this.modalArchives = document.getElementById('modal-archives');
         this.btnCloseArchives = document.getElementById('btn-close-archives');
 
-        // Codex Modal Elements
         this.modalCodex = document.getElementById('modal-codex');
         this.btnCloseCodex = document.getElementById('btn-close-codex');
 
-        // Pendulum Sliders
+        this.modalWallfacer = document.getElementById('modal-wallfacer');
+        this.btnCloseWallfacer = document.getElementById('btn-close-wallfacer');
+
         this.sliderPendulumLen = document.getElementById('slider-pendulum-len');
         this.sliderPendulumMass = document.getElementById('slider-pendulum-mass');
         this.valPendulumLen = document.getElementById('val-pendulum-len');
@@ -125,7 +130,6 @@ class GameController {
         this.btnTogglePendulum = document.getElementById('btn-toggle-pendulum');
         this.pendulumStatus = document.getElementById('pendulum-status');
 
-        // Sophon Elements
         this.sophonCountdown = document.getElementById('sophon-countdown');
         this.sophonWarning = document.getElementById('sophon-warning');
 
@@ -178,6 +182,12 @@ class GameController {
             });
         }
 
+        if (this.btnWallfacer) {
+            this.btnWallfacer.addEventListener('click', () => {
+                if (window.openWallfacerModal) window.openWallfacerModal();
+            });
+        }
+
         if (this.btnCloseArchives) {
             this.btnCloseArchives.addEventListener('click', () => {
                 if (window.closeArchivesModal) window.closeArchivesModal();
@@ -190,20 +200,29 @@ class GameController {
             });
         }
 
-        this.tabSky.addEventListener('click', () => {
-            this.currentViewMode = 'sky';
-            this.tabSky.classList.add('active');
-            this.tabHC.classList.remove('active');
-            if (window.soundEngine) window.soundEngine.playChime();
-            this.log('system', '切换至 [🌌 三体天象视图]');
-        });
+        if (this.btnCloseWallfacer) {
+            this.btnCloseWallfacer.addEventListener('click', () => {
+                if (window.closeWallfacerModal) window.closeWallfacerModal();
+            });
+        }
 
-        this.tabHC.addEventListener('click', () => {
-            this.currentViewMode = 'human_computer';
-            this.tabHC.classList.add('active');
-            this.tabSky.classList.remove('active');
-            if (window.soundEngine) window.soundEngine.playChime();
-            this.log('system', '切换至 [🪖 秦始皇三千万士兵人肉计算机列阵]');
+        const viewTabs = [
+            { btn: this.tabSky, mode: 'sky', label: '2D天象视图' },
+            { btn: this.tab3DSky, mode: '3d_sky', label: '3D三体宇宙视图' },
+            { btn: this.tabHC, mode: 'human_computer', label: '2D人肉计算机阵列' },
+            { btn: this.tab3DHC, mode: '3d_human_computer', label: '3D秦始皇三千万士兵方阵' }
+        ];
+
+        viewTabs.forEach(tab => {
+            if (tab.btn) {
+                tab.btn.addEventListener('click', () => {
+                    viewTabs.forEach(t => t.btn && t.btn.classList.remove('active'));
+                    tab.btn.classList.add('active');
+                    this.currentViewMode = tab.mode;
+                    if (window.soundEngine) window.soundEngine.playChime();
+                    this.log('system', `切换至 [ ${tab.label} ]`);
+                });
+            }
         });
 
         this.btnSpeed.addEventListener('click', () => {
@@ -237,8 +256,10 @@ class GameController {
             if (gate === 'AND') {
                 this.computeBonus = 1.5;
                 this.currentViewMode = 'human_computer';
-                this.tabHC.classList.add('active');
-                this.tabSky.classList.remove('active');
+                if (this.tabHC) {
+                    [this.tabSky, this.tab3DSky, this.tabHC, this.tab3DHC].forEach(b => b && b.classList.remove('active'));
+                    this.tabHC.classList.add('active');
+                }
                 if (window.soundEngine) window.soundEngine.playChime();
                 this.codexManager.unlockAchievement('logic_gate_master');
                 this.log('success', '【人肉计算机】三千万士兵逻辑门电路校验成功！全军算力提升 50%！');
@@ -325,8 +346,14 @@ class GameController {
 
     resizeCanvas() {
         const container = document.getElementById('canvas-container');
-        this.canvas.width = container.clientWidth;
-        this.canvas.height = container.clientHeight;
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        this.canvas.width = width;
+        this.canvas.height = height;
+
+        if (this.three3DVis) {
+            this.three3DVis.resize(width, height);
+        }
     }
 
     renderPhilosopherCards() {
@@ -587,6 +614,14 @@ class GameController {
     render() {
         const width = this.canvas.width;
         const height = this.canvas.height;
+
+        if (this.currentViewMode === '3d_sky' || this.currentViewMode === '3d_human_computer') {
+            this.canvas.style.display = 'none';
+            if (this.three3DVis) this.three3DVis.updateAndRender(this.physics, this.currentViewMode);
+            return;
+        }
+
+        this.canvas.style.display = 'block';
 
         if (this.currentViewMode === 'human_computer') {
             this.humanComputerVis.render(width, height);
