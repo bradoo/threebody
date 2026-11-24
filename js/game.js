@@ -21,7 +21,7 @@ class GameController {
         this.resonanceRate = 0;
         this.highResonanceStreak = 0;
 
-        // Sophon & Dilemmas & Relics & Archives
+        // Sophon & Dilemmas & Relics & Archives & Codex
         this.sophonActive = false;
         this.activeDilemma = null;
 
@@ -34,6 +34,7 @@ class GameController {
         this.relicManager = new RelicDraftManager(this);
         this.synergyManager = new SynergyManager(this);
         this.archivesManager = new CivilizationArchives(this);
+        this.codexManager = new ScientificCodexManager(this);
 
         this.setupEventListeners();
         this.renderPhilosopherCards();
@@ -77,6 +78,7 @@ class GameController {
         this.btnSophonCleanse = document.getElementById('btn-sophon-cleanse');
         this.btnSpeed = document.getElementById('btn-speed');
         this.btnArchives = document.getElementById('btn-archives');
+        this.btnCodex = document.getElementById('btn-codex');
 
         this.tabSky = document.getElementById('tab-sky');
         this.tabHC = document.getElementById('tab-hc');
@@ -109,6 +111,10 @@ class GameController {
         // Archives Modal Elements
         this.modalArchives = document.getElementById('modal-archives');
         this.btnCloseArchives = document.getElementById('btn-close-archives');
+
+        // Codex Modal Elements
+        this.modalCodex = document.getElementById('modal-codex');
+        this.btnCloseCodex = document.getElementById('btn-close-codex');
 
         // Pendulum Sliders
         this.sliderPendulumLen = document.getElementById('slider-pendulum-len');
@@ -162,13 +168,25 @@ class GameController {
 
         if (this.btnArchives) {
             this.btnArchives.addEventListener('click', () => {
-                this.archivesManager.showArchivesModal();
+                if (window.openArchivesModal) window.openArchivesModal();
+            });
+        }
+
+        if (this.btnCodex) {
+            this.btnCodex.addEventListener('click', () => {
+                if (window.openCodexModal) window.openCodexModal();
             });
         }
 
         if (this.btnCloseArchives) {
             this.btnCloseArchives.addEventListener('click', () => {
-                this.modalArchives.classList.remove('active');
+                if (window.closeArchivesModal) window.closeArchivesModal();
+            });
+        }
+
+        if (this.btnCloseCodex) {
+            this.btnCloseCodex.addEventListener('click', () => {
+                if (window.closeCodexModal) window.closeCodexModal();
             });
         }
 
@@ -222,6 +240,7 @@ class GameController {
                 this.tabHC.classList.add('active');
                 this.tabSky.classList.remove('active');
                 if (window.soundEngine) window.soundEngine.playChime();
+                this.codexManager.unlockAchievement('logic_gate_master');
                 this.log('success', '【人肉计算机】三千万士兵逻辑门电路校验成功！全军算力提升 50%！');
                 this.modalHC.classList.remove('active');
             } else {
@@ -344,6 +363,10 @@ class GameController {
                     }
                     this.renderPhilosopherCards();
                     this.synergyManager.checkSynergies(this.activePhilosophers.map(ap => ap.id));
+
+                    if (this.activePhilosophers.some(ap => ap.id === 'einstein')) {
+                        this.codexManager.unlockAchievement('sophon_immunity');
+                    }
                 });
             }
             listEl.appendChild(card);
@@ -355,6 +378,9 @@ class GameController {
         this.isDehydrated = shouldDehydrate;
         if (shouldDehydrate) {
             this.log('warn', '【行政指令】全民脱水！三体人卷成干皮进入地下仓储。');
+            if (this.physics.planet.temp > 90) {
+                this.codexManager.unlockAchievement('fire_survivor');
+            }
         } else {
             if (window.soundEngine) window.soundEngine.playSplash();
             this.log('success', '【行政指令】浸泡！将干皮投入水槽，文明重获新声。');
@@ -402,6 +428,10 @@ class GameController {
 
             this.resonanceRate = Math.max(0, 100 - Math.floor(diff * 0.4));
             this.pendulumResonanceVal.innerText = `${this.resonanceRate}%`;
+
+            if (this.resonanceRate > 80) {
+                this.codexManager.unlockAchievement('gravity_lock');
+            }
 
             if (this.resonanceRate > 85) this.highResonanceStreak += delta * this.timeScale;
             else this.highResonanceStreak = 0;
@@ -504,7 +534,6 @@ class GameController {
         this.modalSubtitle.innerText = `第 ${this.epochNumber} 号文明成功拯救了自身`;
         this.modalBody.innerText = `在经历了 ${Math.floor(this.year)} 年的浴血挣扎后，文明通过【${reason}】。三体星人终于摆脱了毁灭的宿命！`;
 
-        // Record into Archives
         this.archivesManager.recordEpoch(
             this.epochNumber,
             this.year,
@@ -527,7 +556,6 @@ class GameController {
         this.modalSubtitle.innerText = `第 ${this.epochNumber} 号文明在${cause}`;
         this.modalBody.innerText = `在 ${Math.floor(this.year)} 年的生存挣扎中，由于未能适应乱纪元的物理毁伤，文明生灵涂炭。幸运的是，智者留下的理论遗产保留了下来，科技初始点数提升至 ${(this.techLevel + 5).toFixed(1)}。`;
 
-        // Record into Archives
         this.archivesManager.recordEpoch(
             this.epochNumber,
             this.year,

@@ -193,7 +193,7 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .relic-title { font-weight: bold; font-size: 0.95rem; color: var(--amber-primary); text-align: center; }
 .relic-desc { font-size: 0.78rem; color: var(--text-main); line-height: 1.35; }
 
-/* Archives List UI */
+/* Archives & Codex List UI */
 .archives-list {
     display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; padding-right: 6px;
 }
@@ -222,7 +222,6 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .log-entry.system { color: var(--cyan-primary); }
 .log-entry.sophon { color: var(--purple-sophon); font-weight: bold; }
 
-/* Modals use display: none by default when inactive, display: flex when active */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(5, 7, 10, 0.92); backdrop-filter: blur(16px); z-index: 200;
@@ -231,6 +230,7 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .modal-overlay.active { display: flex; opacity: 1; pointer-events: all; }
 
 #modal-archives { z-index: 300; }
+#modal-codex { z-index: 300; }
 
 .modal-card {
     background: var(--panel-bg); border: 1px solid var(--amber-primary);

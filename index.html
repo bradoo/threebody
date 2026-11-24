@@ -26,6 +26,7 @@
             <span id="epoch-title" class="epoch-badge">第 137 号文明</span>
             <span id="epoch-state-tag" class="state-tag stable">恒纪元</span>
             <button id="btn-archives" class="btn-cmd btn-system" style="padding: 4px 12px; font-size: 0.8rem; border-color: var(--amber-primary); color: var(--amber-primary);" onclick="openArchivesModal();">🏛️ 文明档案馆</button>
+            <button id="btn-codex" class="btn-cmd btn-system" style="padding: 4px 12px; font-size: 0.8rem; border-color: var(--cyan-primary); color: var(--cyan-primary);" onclick="openCodexModal();">🏆 科学图鉴与成就</button>
         </div>
 
         <div style="font-family: var(--font-mono); font-size: 0.88rem; color: var(--text-muted);">
@@ -168,7 +169,7 @@
                 <button id="btn-sophon-cleanse" class="btn-cmd btn-system" style="border-color: var(--purple-sophon); color: var(--purple-sophon); display: none;">
                     <span>👁️ 智子净化</span>
                 </button>
-                <button id="btn-speed" class="btn-cmd btn-system">
+                <button id="btn-speed" class="btn-cmd btn-speed">
                     <span id="speed-label">⏩ 1x 速度</span>
                 </button>
             </div>
@@ -291,6 +292,26 @@
         </div>
     </div>
 
+    <!-- Modal 5: Scientific Codex & Achievements Modal -->
+    <div id="modal-codex" class="modal-overlay">
+        <div class="modal-card" style="width: 720px; max-height: 85vh;">
+            <h2 class="modal-title" style="color: var(--cyan-primary);">🏆 三体科学图鉴与勋章成就</h2>
+            <p class="modal-subtitle">记录人类智者探索三体天体规律的科学定律与文明勋章</p>
+
+            <div class="panel-title">
+                <span>成就勋章集</span>
+            </div>
+            <div id="codex-achievements-container" class="archives-list" style="max-height: 140px;"></div>
+
+            <div class="panel-title" style="margin-top: 8px;">
+                <span>三体物理与科学定律图鉴</span>
+            </div>
+            <div id="codex-theory-container" class="archives-list" style="max-height: 180px;"></div>
+
+            <button id="btn-close-codex" class="modal-btn" style="margin-top: 10px;" onclick="closeCodexModal();">关闭图鉴</button>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/audio.js"></script>
     <script src="js/particles.js"></script>
@@ -302,6 +323,7 @@
     <script src="js/relics.js"></script>
     <script src="js/synergies.js"></script>
     <script src="js/archives.js"></script>
+    <script src="js/codex.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>

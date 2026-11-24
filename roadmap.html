@@ -221,7 +221,7 @@
                     <input type="checkbox" class="task-checkbox" checked>
                     <div class="task-content">
                         <div class="task-title">P1-1: 动态气候冰火渲染与天灾粒子动画 [已完成]</div>
-                        <div class="task-desc">已实现双日凌空地表岩浆裂纹与火焰上升粒子，三体飞空冰封纹理与漫天雪花粒子 (js/particles.js)。</div>
+                        <div class="task-desc">已实现双日凌空地表岩浆裂纹与火焰上升粒子，三日飞空冰封纹理与漫天雪花粒子 (js/particles.js)。</div>
                     </div>
                     <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
@@ -251,13 +251,13 @@
                     </div>
                     <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
-                <div class="task-card" data-id="p2-2">
-                    <input type="checkbox" class="task-checkbox">
+                <div class="task-card completed" data-id="p2-2">
+                    <input type="checkbox" class="task-checkbox" checked>
                     <div class="task-content">
-                        <div class="task-title">P2-2: 成就卡牌与科学图鉴收集系统</div>
-                        <div class="task-desc">设计“火海生灵”、“算数狂人”等成就勋章及全部三体天体规律科学图鉴。</div>
+                        <div class="task-title">P2-2: 成就卡牌与科学图鉴收集系统 [已完成]</div>
+                        <div class="task-desc">已实现“火海生灵”、“算数狂人”等成就勋章解构与全部六大三体天体物理与科学定律图鉴 (js/codex.js)。</div>
                     </div>
-                    <span class="task-badge">P2-2</span>
+                    <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
             </div>
         </div>
@@ -295,7 +295,7 @@
             const progressFill = document.getElementById('progress-fill');
             const progressText = document.getElementById('progress-text');
 
-            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true,"p1-1":true,"p1-2":true,"p2-1":true}');
+            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true,"p1-1":true,"p1-2":true,"p2-1":true,"p2-2":true}');
 
             checkboxes.forEach((cb) => {
                 const card = cb.closest('.task-card');
