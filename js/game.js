@@ -42,7 +42,6 @@ class GameController {
 
         this.log('system', `[系统启幕] 第 ${this.epochNumber} 号三体文明启程。`);
 
-        // Show Relic Draft at the start of Epoch
         setTimeout(() => this.relicManager.showRelicDraftModal(), 600);
     }
 
@@ -124,7 +123,6 @@ class GameController {
     setupEventListeners() {
         window.addEventListener('resize', () => this.resizeCanvas());
 
-        // Interactive Canvas Click for Cosmic Orbs & Sound
         this.canvas.addEventListener('click', (e) => {
             const rect = this.canvas.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
@@ -531,6 +529,7 @@ class GameController {
             this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(width, y); this.ctx.stroke();
         }
 
+        // Render Cosmic Orbs (Interactive Clickables)
         this.physics.cosmicOrbs.forEach(orb => {
             const ox = cx + orb.x;
             const oy = cy + orb.y;
@@ -620,19 +619,58 @@ class GameController {
             this.ctx.fill();
         });
 
+        // Render Planet with Lava / Ice Climate Texture
         const planet = this.physics.planet;
         const px = cx + planet.x;
         const py = cy + planet.y;
+        const temp = planet.temp;
 
-        this.ctx.fillStyle = this.isDehydrated ? 'rgba(245, 158, 11, 0.5)' : 'rgba(6, 182, 212, 0.6)';
+        let planetGlow = 'rgba(6, 182, 212, 0.6)';
+        let planetColor = '#06b6d4';
+
+        if (temp > 70) {
+            planetGlow = 'rgba(239, 68, 68, 0.8)';
+            planetColor = '#ef4444'; // Lava molten core
+        } else if (temp < -30) {
+            planetGlow = 'rgba(56, 189, 248, 0.8)';
+            planetColor = '#38bdf8'; // Frozen ice blue
+        } else if (this.isDehydrated) {
+            planetGlow = 'rgba(245, 158, 11, 0.5)';
+            planetColor = '#f59e0b';
+        }
+
+        // Planet Outer Glow Aura
+        this.ctx.fillStyle = planetGlow;
         this.ctx.beginPath();
-        this.ctx.arc(px, py, planet.radius * 2, 0, Math.PI * 2);
+        this.ctx.arc(px, py, planet.radius * 2.5, 0, Math.PI * 2);
         this.ctx.fill();
 
-        this.ctx.fillStyle = this.isDehydrated ? '#f59e0b' : '#06b6d4';
+        // Planet Core Body
+        this.ctx.fillStyle = planetColor;
         this.ctx.beginPath();
         this.ctx.arc(px, py, planet.radius, 0, Math.PI * 2);
         this.ctx.fill();
+
+        // Molten Lava Crack Lines / Ice Crystal Overlay
+        if (temp > 70) {
+            this.ctx.strokeStyle = '#f59e0b';
+            this.ctx.lineWidth = 1.2;
+            this.ctx.beginPath();
+            this.ctx.moveTo(px - 3, py - 3); this.ctx.lineTo(px + 2, py + 1); this.ctx.lineTo(px - 1, py + 4);
+            this.ctx.stroke();
+        } else if (temp < -30) {
+            this.ctx.strokeStyle = '#ffffff';
+            this.ctx.lineWidth = 1;
+            this.ctx.beginPath();
+            this.ctx.moveTo(px - 4, py); this.ctx.lineTo(px + 4, py);
+            this.ctx.moveTo(px, py - 4); this.ctx.lineTo(px, py + 4);
+            this.ctx.stroke();
+        }
+
+        // Render Climate Particles
+        if (window.climateParticleEngine) {
+            window.climateParticleEngine.updateAndRender(this.ctx, width, height, temp, px, py);
+        }
     }
 }
 

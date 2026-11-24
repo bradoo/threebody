@@ -179,7 +179,6 @@
         <div class="header-title">ROADMAP & TRACKER</div>
         <div class="header-desc">《三体游戏：百家解困》分级推进与实时完成度跟踪面板</div>
 
-        <!-- Dynamic Overall Progress Bar -->
         <div class="progress-bar-container">
             <div id="progress-fill" class="progress-bar-fill"></div>
             <div id="progress-text" class="progress-text">整体完成度: 0%</div>
@@ -218,13 +217,13 @@
                 <span>画面与策略</span>
             </div>
             <div class="task-list">
-                <div class="task-card" data-id="p1-1">
-                    <input type="checkbox" class="task-checkbox">
+                <div class="task-card completed" data-id="p1-1">
+                    <input type="checkbox" class="task-checkbox" checked>
                     <div class="task-content">
-                        <div class="task-title">P1-1: 动态气候冰火渲染与天灾粒子动画</div>
-                        <div class="task-desc">双日凌空时渲染行星岩浆裂纹与火球粒子，三日飞空时渲染冰封霜冻纹理与雪花微粒。</div>
+                        <div class="task-title">P1-1: 动态气候冰火渲染与天灾粒子动画 [已完成]</div>
+                        <div class="task-desc">已实现双日凌空地表岩浆裂纹与火焰上升粒子，三日飞空冰封纹理与漫天雪花粒子 (js/particles.js)。</div>
                     </div>
-                    <span class="task-badge">P1-1</span>
+                    <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
                 <div class="task-card" data-id="p1-2">
                     <input type="checkbox" class="task-checkbox">
@@ -296,7 +295,7 @@
             const progressFill = document.getElementById('progress-fill');
             const progressText = document.getElementById('progress-text');
 
-            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true}');
+            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true,"p1-1":true}');
 
             checkboxes.forEach((cb) => {
                 const card = cb.closest('.task-card');
