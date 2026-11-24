@@ -225,13 +225,13 @@
                     </div>
                     <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
-                <div class="task-card" data-id="p1-2">
-                    <input type="checkbox" class="task-checkbox">
+                <div class="task-card completed" data-id="p1-2">
+                    <input type="checkbox" class="task-checkbox" checked>
                     <div class="task-content">
-                        <div class="task-title">P1-2: 哲人学派组合羁绊系统 (Philosopher Synergies)</div>
-                        <div class="task-desc">同场上阵【周文王+墨子】(东方理性)、【哥白尼+牛顿】(经典科学)、【冯诺依曼+爱因斯坦】(终极算力) 触发隐藏羁绊加成。</div>
+                        <div class="task-title">P1-2: 哲人学派组合羁绊系统 (Philosopher Synergies) [已完成]</div>
+                        <div class="task-desc">已实现同场双选哲人模式，选择【周文王+墨子】(东方理性)、【哥白尼+牛顿】(经典科学)、【冯诺依曼+爱因斯坦】(终极算力) 自动触发隐藏羁绊 (js/synergies.js)。</div>
                     </div>
-                    <span class="task-badge">P1-2</span>
+                    <span class="task-badge" style="color: #10b981;">DONE</span>
                 </div>
             </div>
         </div>
@@ -295,7 +295,7 @@
             const progressFill = document.getElementById('progress-fill');
             const progressText = document.getElementById('progress-text');
 
-            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true,"p1-1":true}');
+            const savedState = JSON.parse(localStorage.getItem('threebody_roadmap_state') || '{"p0-1":true,"p0-2":true,"p1-1":true,"p1-2":true}');
 
             checkboxes.forEach((cb) => {
                 const card = cb.closest('.task-card');

@@ -25,13 +25,16 @@ class GameController {
         this.sophonActive = false;
         this.activeDilemma = null;
 
-        this.activePhilosopher = PHILOSOPHERS[0];
+        // Multi-Philosopher Selection (Up to 2 active)
+        this.activePhilosophers = [PHILOSOPHERS[0]];
+
         this.isGameOver = false;
 
         this.setupDOMReferences();
         this.humanComputerVis = new HumanComputerVisualizer(this.canvas, this.ctx);
         this.eventManager = new RandomEventManager(this);
         this.relicManager = new RelicDraftManager(this);
+        this.synergyManager = new SynergyManager(this);
 
         this.setupEventListeners();
         this.renderPhilosopherCards();
@@ -297,7 +300,7 @@ class GameController {
 
         PHILOSOPHERS.forEach(p => {
             const isUnlocked = this.techLevel >= p.techCost;
-            const isActive = this.activePhilosopher.id === p.id;
+            const isActive = this.activePhilosophers.some(ap => ap.id === p.id);
 
             const card = document.createElement('div');
             card.className = `philosopher-card ${isActive ? 'active' : ''}`;
@@ -313,8 +316,20 @@ class GameController {
 
             if (isUnlocked) {
                 card.addEventListener('click', () => {
-                    this.activePhilosopher = p;
+                    if (isActive) {
+                        // Deselect if active (keep at least 1)
+                        if (this.activePhilosophers.length > 1) {
+                            this.activePhilosophers = this.activePhilosophers.filter(ap => ap.id !== p.id);
+                        }
+                    } else {
+                        // Add to active (max 2)
+                        if (this.activePhilosophers.length >= 2) {
+                            this.activePhilosophers.shift(); // Remove oldest
+                        }
+                        this.activePhilosophers.push(p);
+                    }
                     this.renderPhilosopherCards();
+                    this.synergyManager.checkSynergies(this.activePhilosophers.map(ap => ap.id));
                 });
             }
             listEl.appendChild(card);
@@ -355,12 +370,16 @@ class GameController {
         this.dehydrationProgress += (targetProgress - this.dehydrationProgress) * delta * 2;
 
         if (this.techLevel > 60 && !this.sophonActive && Math.random() < 0.002) {
-            this.sophonActive = true;
-            this.sophonWarning.style.display = 'block';
-            this.sophonCountdown.classList.add('active');
-            this.btnSophonCleanse.style.display = 'flex';
-            if (window.soundEngine) window.soundEngine.playAlarm();
-            this.log('sophon', '⚠️【智子降临】检测到来自半人马座的三体智子对数据展开微观量子干扰！');
+            // Einstein immunity check
+            const hasEinstein = this.activePhilosophers.some(ap => ap.id === 'einstein');
+            if (!hasEinstein) {
+                this.sophonActive = true;
+                this.sophonWarning.style.display = 'block';
+                this.sophonCountdown.classList.add('active');
+                this.btnSophonCleanse.style.display = 'flex';
+                if (window.soundEngine) window.soundEngine.playAlarm();
+                this.log('sophon', '⚠️【智子降临】检测到来自半人马座的三体智子对数据展开微观量子干扰！');
+            }
         }
 
         if (this.pendulumActive) {
@@ -387,7 +406,7 @@ class GameController {
             temp = temp * (1 - (this.resonanceRate / 200));
         }
 
-        if (this.sophonActive && this.activePhilosopher.id !== 'einstein' && Math.random() < 0.3) {
+        if (this.sophonActive && !this.activePhilosophers.some(ap => ap.id === 'einstein') && Math.random() < 0.3) {
             temp += (Math.random() * 20 - 10);
         }
 
@@ -397,7 +416,8 @@ class GameController {
             const damageRate = (1 - this.dehydrationProgress) * 0.15 * this.timeScale;
             this.population -= damageRate;
         } else if (!this.isDehydrated && this.population < 100) {
-            const growthBonus = this.activePhilosopher.id === 'copernicus' ? 1.2 : 1.0;
+            const hasCopernicus = this.activePhilosophers.some(ap => ap.id === 'copernicus');
+            const growthBonus = hasCopernicus ? 1.2 : 1.0;
             this.population += 0.02 * growthBonus * this.timeScale;
             this.techLevel += 0.015 * this.computeBonus * this.timeScale;
 
@@ -449,9 +469,10 @@ class GameController {
         this.techVal.innerText = `${this.techLevel.toFixed(1)} / 100`;
         this.techBar.style.width = `${this.techLevel}%`;
 
-        if (this.activePhilosopher) {
-            const confidence = Math.floor(this.activePhilosopher.confidence * this.computeBonus);
-            this.predictionText.innerText = this.activePhilosopher.predict(temp, visibleSuns);
+        if (this.activePhilosophers.length > 0) {
+            const p = this.activePhilosophers[0];
+            const confidence = Math.floor(p.confidence * this.computeBonus);
+            this.predictionText.innerText = p.predict(temp, visibleSuns);
             this.predictionConfidence.innerText = `${confidence}%`;
         }
     }
@@ -619,7 +640,7 @@ class GameController {
             this.ctx.fill();
         });
 
-        // Render Planet with Lava / Ice Climate Texture
+        // Render Planet with Climate Texture
         const planet = this.physics.planet;
         const px = cx + planet.x;
         const py = cy + planet.y;
@@ -630,28 +651,25 @@ class GameController {
 
         if (temp > 70) {
             planetGlow = 'rgba(239, 68, 68, 0.8)';
-            planetColor = '#ef4444'; // Lava molten core
+            planetColor = '#ef4444';
         } else if (temp < -30) {
             planetGlow = 'rgba(56, 189, 248, 0.8)';
-            planetColor = '#38bdf8'; // Frozen ice blue
+            planetColor = '#38bdf8';
         } else if (this.isDehydrated) {
             planetGlow = 'rgba(245, 158, 11, 0.5)';
             planetColor = '#f59e0b';
         }
 
-        // Planet Outer Glow Aura
         this.ctx.fillStyle = planetGlow;
         this.ctx.beginPath();
         this.ctx.arc(px, py, planet.radius * 2.5, 0, Math.PI * 2);
         this.ctx.fill();
 
-        // Planet Core Body
         this.ctx.fillStyle = planetColor;
         this.ctx.beginPath();
         this.ctx.arc(px, py, planet.radius, 0, Math.PI * 2);
         this.ctx.fill();
 
-        // Molten Lava Crack Lines / Ice Crystal Overlay
         if (temp > 70) {
             this.ctx.strokeStyle = '#f59e0b';
             this.ctx.lineWidth = 1.2;
@@ -667,7 +685,6 @@ class GameController {
             this.ctx.stroke();
         }
 
-        // Render Climate Particles
         if (window.climateParticleEngine) {
             window.climateParticleEngine.updateAndRender(this.ctx, width, height, temp, px, py);
         }
